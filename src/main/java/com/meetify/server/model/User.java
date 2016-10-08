@@ -10,17 +10,22 @@ import java.util.Set;
  */
 
 @SuppressWarnings("unused")
+
 @Entity
 @Table(name = "users")
-
+@IdClass(UserID.class)
 public class User implements Serializable {
 
     @Id
     @Column(name = "vkid")
     private Long vkID;
+
     @ElementCollection
     @Column(name = "friends")
     private Set<Long> friends;
+
+    @OneToOne
+    private Key key;
 
     private User() {
 
@@ -50,5 +55,14 @@ public class User implements Serializable {
 
     public Long getVkID() {
         return vkID;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "vkID=" + vkID +
+                ", friends=" + friends +
+                ", key=" + key +
+                '}';
     }
 }
