@@ -1,4 +1,6 @@
-package com.meetify.server.model;
+package com.meetify.server.model.ids;
+
+import com.meetify.server.model.User;
 
 import java.io.Serializable;
 
@@ -7,7 +9,7 @@ import java.io.Serializable;
  * Created by kr3v on 08.10.2016.
  */
 @SuppressWarnings("unused")
-class KeyID implements Serializable {
+public class KeyID implements Serializable {
     private User user;
 
     public KeyID(User user) {

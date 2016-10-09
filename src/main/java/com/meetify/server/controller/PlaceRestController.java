@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/places")
-public class PlacesRestController {
+public class PlaceRestController {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @RequestMapping("/getNearby")
@@ -32,6 +32,4 @@ public class PlacesRestController {
         }
         return new ResponseEntity<>(StringUtils.makeString(HttpRequest.request(lat, lon, radius)), null, HttpStatus.OK);
     }
-
-
 }

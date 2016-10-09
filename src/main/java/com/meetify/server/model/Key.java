@@ -1,6 +1,7 @@
 package com.meetify.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meetify.server.model.ids.KeyID;
 
 import javax.persistence.*;
 import java.io.Serializable;
