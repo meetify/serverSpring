@@ -23,7 +23,6 @@ public class User implements Serializable {
     @ElementCollection
     @Column(name = "friends")
     private Set<Long> friends;
-
     @OneToOne
     private Key key;
 
@@ -34,6 +33,10 @@ public class User implements Serializable {
     public User(Long vkID, Set<Long> friends) {
         this.vkID = vkID;
         this.friends = friends;
+    }
+
+    public void setKey(Key key) {
+        this.key = key;
     }
 
     public Set<Long> getFriends() {

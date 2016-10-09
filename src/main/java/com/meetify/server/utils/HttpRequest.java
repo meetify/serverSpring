@@ -20,11 +20,7 @@ public class HttpRequest {
 
     }
 
-    public static List<String> request(String lat, String lng, String radius) throws IOException {
-        URL url = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                lat + "," + lng + "&" +
-                "radius=" + radius + "&" +
-                "key=" + GOOGLE_API_KEY);
+    public static List<String> request(URL url) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         try (BufferedReader in = new BufferedReader(
@@ -34,9 +30,17 @@ public class HttpRequest {
 
             String inputLine;
             while ((inputLine = in.readLine()) != null)
-                response.add(inputLine);
+                response.add(inputLine.trim());
             in.close();
             return response;
         }
+    }
+
+    public static List<String> request(String lat, String lng, String radius) throws IOException {
+        URL url = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
+                lat + "," + lng + "&" +
+                "radius=" + radius + "&" +
+                "key=" + GOOGLE_API_KEY);
+        return request(url);
     }
 }

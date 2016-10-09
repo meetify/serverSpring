@@ -49,7 +49,7 @@ public class Key implements Serializable {
     }
 
     public boolean usable() {
-        return currentTimeMillis() - time >= 3600 * 1000;
+        return (currentTimeMillis() - time) >= (3600 * 1000);
     }
 
     public Long getVkID() {

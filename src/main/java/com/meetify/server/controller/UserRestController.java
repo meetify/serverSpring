@@ -2,7 +2,7 @@ package com.meetify.server.controller;
 
 import com.meetify.server.model.User;
 import com.meetify.server.repository.UserRepository;
-import com.meetify.server.utils.Parser;
+import com.meetify.server.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +52,7 @@ public class UserRestController {
                     null, HttpStatus.NOT_ACCEPTABLE);
         }
 
-        this.userRepository.save(new User(vkID, Parser.setFromString(friend)));
+        this.userRepository.save(new User(vkID, StringUtils.setFromString(friend)));
         return new ResponseEntity<>("user with id " + id + " added to database",
                 null, HttpStatus.CREATED);
     }
@@ -67,7 +67,7 @@ public class UserRestController {
 
         Long vkID = Long.parseLong(id);
         Optional<User> user = this.userRepository.findByVkID(vkID);
-        Set<Long> friends = Parser.setFromString(friend);
+        Set<Long> friends = StringUtils.setFromString(friend);
         if (user.isPresent()) {
             userRepository.save(user.get().setFriends(friends));
             return new ResponseEntity<>("user " + id + " friends updated",
