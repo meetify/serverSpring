@@ -1,5 +1,6 @@
 package com.meetify.server.model.ids;
 
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
@@ -7,7 +8,10 @@ import java.io.Serializable;
  * Created by kr3v on 08.10.2016.
  */
 @SuppressWarnings("unused")
+@Embeddable
 public class UserID implements Serializable {
+    
+    
     private Long vkID;
 
     public UserID() {
@@ -15,7 +19,6 @@ public class UserID implements Serializable {
     }
 
     public UserID(Long vkID) {
-
         this.vkID = vkID;
     }
 

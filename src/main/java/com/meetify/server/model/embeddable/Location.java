@@ -1,6 +1,5 @@
 package com.meetify.server.model.embeddable;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
@@ -11,35 +10,31 @@ import java.io.Serializable;
 @SuppressWarnings("unused")
 @Embeddable
 public class Location implements Serializable {
-    @Column(name = "lat")
+
     private double lat;
-    
-    @Column(name = "lon")
     private double lon;
-    
-    public Location() {
-        
+
+    private Location() {
+
     }
-    
+
     public Location(double lat, double lon) {
-        
         this.lat = lat;
         this.lon = lon;
     }
-    
+
     public double getLon() {
         return lon;
     }
-    
+
     public void setLon(double lon) {
         this.lon = lon;
     }
-    
+
     public double getLat() {
-        
         return lat;
     }
-    
+
     public void setLat(double lat) {
         this.lat = lat;
     }

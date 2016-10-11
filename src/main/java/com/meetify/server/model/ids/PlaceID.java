@@ -12,11 +12,9 @@ public class PlaceID implements Serializable {
     private Long id;
     
     public PlaceID() {
-        
     }
     
     public PlaceID(Long id) {
-        
         this.id = id;
     }
     

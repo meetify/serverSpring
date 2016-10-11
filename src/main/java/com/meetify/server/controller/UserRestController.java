@@ -23,14 +23,14 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserRestController {
     private final UserRepository userRepository;
-
+    
     @Autowired
     public UserRestController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getUser(@RequestParam(value = "id") String name) {
+    public ResponseEntity<?> get(@RequestParam(value = "id") String name) {
         Optional<User> u = userRepository.findByVkID(Long.parseLong(name));
         if (u.isPresent()) {
             return new ResponseEntity<>(u.get(), null, HttpStatus.OK);
@@ -42,27 +42,35 @@ public class UserRestController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> post(@RequestParam(value = "id") String id,
                                   @RequestParam(value = "friends", defaultValue = "") String friend) {
-        if (friend.matches("[^,0-9]+") || id.equals("") || id.matches("[^0-9]+")) {
-            return new ResponseEntity<>("illegal arguments", null, HttpStatus.NOT_ACCEPTABLE);
+        if (!friend.matches("[\\d,]*")) {
+            return new ResponseEntity<>("friends list is incorrect", null, HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (!id.matches("\\d+")) {
+            return new ResponseEntity<>("id is incorrect", null, HttpStatus.NOT_ACCEPTABLE);
         }
 
         Long vkID = Long.parseLong(id);
-        if (userRepository.findByVkID(vkID).isPresent()) {
-            return new ResponseEntity<>("user with the same id is present in database",
-                    null, HttpStatus.NOT_ACCEPTABLE);
+        Optional<User> u = userRepository.findByVkID(vkID);
+        User user;
+        if (u.isPresent()) {
+            user = u.get();
+            user.setFriends(StringUtils.setFromString(friend));
+        } else {
+            user = new User(vkID, StringUtils.setFromString(friend));
         }
-
-        this.userRepository.save(new User(vkID, StringUtils.setFromString(friend)));
-        return new ResponseEntity<>("user with id " + id + " added to database",
-                null, HttpStatus.CREATED);
+        userRepository.save(user);
+        return new ResponseEntity<>(user, null, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<?> put(@RequestParam(value = "id") String id,
                                  @RequestParam(value = "friends", defaultValue = "") String friend) {
-
-        if (!friend.matches("[\\d,]*") || !id.matches("\\d+")) {
-            return new ResponseEntity<>("illegal arguments", null, HttpStatus.NOT_ACCEPTABLE);
+    
+        if (!friend.matches("[\\d,]*")) {
+            return new ResponseEntity<>("friends list is incorrect", null, HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (!id.matches("\\d+")) {
+            return new ResponseEntity<>("id is incorrect", null, HttpStatus.NOT_ACCEPTABLE);
         }
 
         Long vkID = Long.parseLong(id);
@@ -85,10 +93,9 @@ public class UserRestController {
         if (u.isPresent()) {
             userRepository.delete(u.get());
             return new ResponseEntity<>("user " + id + " was deleted",
-                    null, HttpStatus.ACCEPTED);
+                    null, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null,
-                    null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
     }
 }

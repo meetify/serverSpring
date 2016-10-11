@@ -12,6 +12,5 @@ import java.util.Optional;
  */
 public interface KeyRepository extends JpaRepository<Key, Long> {
     Optional<Key> findByUser(User user);
-    
     Optional<Key> findByDevInfo(String devInfo);
 }

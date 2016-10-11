@@ -17,50 +17,36 @@ import static java.lang.System.currentTimeMillis;
 @Table(name = "keys")
 @IdClass(KeyID.class)
 public class Key implements Serializable {
-
+    
     @Id
-    private final Long vkID;
-
     @JsonIgnore
     @OneToOne
-    private final User user;
-
+    private User user;
+    
     @Column(name = "time")
-    private final Long time;
-
+    private Long time;
+    
     @Column(name = "devinfo")
-    private final String devInfo;
-
-    public Key() {
-        this.user = null;
-        this.time = null;
-        this.devInfo = null;
-        this.vkID = null;
+    private String devInfo;
+    
+    @SuppressWarnings("unused")
+    private Key() {
     }
-
+    
     public Key(User user, String devInfo) {
         this.user = user;
         this.devInfo = devInfo;
         this.time = currentTimeMillis();
-        this.vkID = user.getVkID();
     }
-
+    
     public User getUser() {
         return user;
     }
-
+    
     public boolean usable() {
         return (currentTimeMillis() - time) >= (3600 * 1000);
     }
-
-    public Long getVkID() {
-        return vkID;
-    }
-
-    public Long getTime() {
-        return time;
-    }
-
+    
     public String getDevInfo() {
         return devInfo;
     }
