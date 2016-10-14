@@ -1,5 +1,6 @@
 package com.meetify.server.repository;
 
+import com.meetify.server.model.Id;
 import com.meetify.server.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,5 +12,5 @@ import java.util.Optional;
  */
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByVkID(Long vkID);
+    Optional<User> findById(Id id);
 }

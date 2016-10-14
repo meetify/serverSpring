@@ -2,115 +2,71 @@ package com.meetify.server.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meetify.server.model.embeddable.Location;
-import com.meetify.server.model.ids.PlaceID;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Random;
-import java.util.Set;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 
 /**
- * com.meetify.server.model
- * Created by kr3v on 08.10.2016.
+ * Place class
+ * Created by dmitry on 10/14/16.
  */
 
 @SuppressWarnings("unused")
 @Entity
-@IdClass(PlaceID.class)
-@Table(name = "places")
-public class Place implements Serializable {
-    
-    private final static Random random = new Random();
-    @Id
-    @Column(name = "place_id")
-    private Long id;
-    @Column(name = "place_name")
+public class Place {
+
+    private static Long currentId;
+    @EmbeddedId
+    private Id id;
     private String name;
-    @Column(name = "place_description")
-    private String description;
-    @Column(name = "place_photo")
-    private String photoIdentifier;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vkid", nullable = false)
-    private User creator;
-    // TODO: 11.10.2016 many-to-many?
-    @ElementCollection
-    private Set<Long> allowedUsers;
-    @Embedded
-    private Location location;
-    
     private Place() {
     }
-    
-    public Place(String name, String description, User creator) {
+
+    public Place(String name) {
         this.name = name;
-        this.description = description;
-        this.creator = creator;
-        this.id = nextId();
+        this.id = new Id(nextId());
     }
-    
-    public Place(String name, String description, String photoIdentifier, User creator, Set<Long> involved, Location location) {
-        this.name = name;
-        this.description = description;
-        this.photoIdentifier = photoIdentifier;
-        this.creator = creator;
-        this.allowedUsers = involved;
-        this.location = location;
-        this.id = nextId();
+
+    public static void setCurrentId(Long value) {
+        if (currentId == null || currentId < value) {
+            currentId = value;
+        }
     }
-    
-    // TODO: 11.10.2016 not very cool solution
-    private Long nextId() {
-        long id = (long) name.hashCode() + description.hashCode() + creator.hashCode() + random.nextLong();
-        return (id < 0) ? id + Long.MAX_VALUE : id;
+
+    private static Long nextId() {
+        return currentId++;
     }
-    
-    public Location getLocation() {
-        return location;
-    }
-    
-    public Long getId() {
+
+    public Id getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
-    public String getDescription() {
-        return description;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Place place = (Place) o;
+
+        return id != null ? id.equals(place.id) : place.id == null;
+
     }
-    
-    public String getPhotoIdentifier() {
-        return photoIdentifier;
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
-    
-    public User getCreator() {
-        return creator;
-    }
-    
-    public Set<Long> getAllowedUsers() {
-        return allowedUsers;
-    }
-    
-    public Place update(Place place) {
-        this.name = place.name;
-        this.creator = place.creator;
-        this.allowedUsers = place.allowedUsers;
-        this.description = place.description;
-        this.photoIdentifier = place.photoIdentifier;
-        return this;
-    }
-    
+
     @Override
     public String toString() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.writeValueAsString(this);
+            return new ObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            return "";
         }
-        return "";
     }
 }
