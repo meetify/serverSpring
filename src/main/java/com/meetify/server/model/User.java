@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -26,11 +27,16 @@ public class User implements Serializable {
 
     @OneToMany
     @ElementCollection
-    private Set<Place> placesCreated;
+    private Set<Place> created;
+
+    @ElementCollection
+    private Set<Id> allowed;
 
     public User(Id id, Set<Id> friends) {
         this.id = id;
         this.friends = friends;
+        this.allowed = new HashSet<>();
+        this.created = new HashSet<>();
     }
 
     private User() {
@@ -40,8 +46,12 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public Set<Place> getPlacesCreated() {
-        return placesCreated;
+    public Set<Id> getAllowed() {
+        return allowed;
+    }
+
+    public Set<Place> getCreated() {
+        return created;
     }
 
     public Set<Id> getFriends() {

@@ -8,7 +8,7 @@ import java.io.Serializable;
  */
 
 @Embeddable
-public class Id extends JsonParser implements Serializable {
+public class Id extends JsonToString implements Serializable {
 
     private Long id;
 

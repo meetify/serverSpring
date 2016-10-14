@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 
 /**
  * Created by dmitry on 10/14/16.
@@ -50,17 +51,29 @@ public class PlaceRestController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> post(@RequestParam(value = "name") String name,
-                                  @RequestParam(value = "owner") String owner) {
+                                  @RequestParam(value = "owner") String owner,
+                                  @RequestParam(value = "allowed") String allowed) {
         Id id = new Id(Long.parseLong(owner));
-        final Place[] place = {null};
+        StringBuilder response = new StringBuilder();
         userRepository.findById(id).ifPresent(user1 -> {
-            place[0] = new Place(name, user1);
-            placeRepository.save(place[0]);
-            user1.getPlacesCreated().add(place[0]);
-            userRepository.save(user1);
+            Place place = new Place(name, user1);
 
+            if (!allowed.equals("")) {
+                Arrays.stream(allowed.split(",")).forEach(s ->
+                        userRepository.findById(new Id(Long.parseLong(s))).ifPresent(user -> {
+                            user.getAllowed().add(place.getId());
+                            place.getAllowed().add(user.getId());
+                            userRepository.save(user);
+                        })
+                );
+            }
+            placeRepository.save(place);
+            user1.getCreated().add(place);
+            userRepository.save(user1);
+            placeRepository.save(place);
+            response.append(place.toString());
         });
-        return new ResponseEntity<>(place[0], null, HttpStatus.OK);
+        return new ResponseEntity<>(response.toString(), null, HttpStatus.OK);
     }
 
 }

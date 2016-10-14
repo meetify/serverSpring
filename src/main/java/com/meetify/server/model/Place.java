@@ -1,12 +1,10 @@
 package com.meetify.server.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Place class
@@ -15,16 +13,20 @@ import javax.persistence.ManyToOne;
 
 @SuppressWarnings("unused")
 @Entity
-public class Place {
+public class Place extends JsonToString {
 
     private static Long currentId;
     @EmbeddedId
     private Id id;
     private String name;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
     private User owner;
+
+    @ElementCollection
+    private Set<Id> allowed;
 
     private Place() {
 
@@ -33,6 +35,7 @@ public class Place {
     public Place(String name) {
         this.name = name;
         this.id = new Id(nextId());
+        this.allowed = new HashSet<>();
     }
 
     public Place(String name, User user) {
@@ -42,13 +45,21 @@ public class Place {
     }
 
     public static void setCurrentId(Long value) {
-        if (currentId == null || currentId < value) {
+        if (currentId == null) {
             currentId = value;
         }
     }
 
     private static Long nextId() {
         return currentId++;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public Set<Id> getAllowed() {
+        return allowed;
     }
 
     public Id getId() {
@@ -73,14 +84,5 @@ public class Place {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return new ObjectMapper().writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            return "";
-        }
     }
 }

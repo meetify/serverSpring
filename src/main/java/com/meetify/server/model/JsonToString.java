@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Created by dmitry on 10/14/16.
  */
-public class JsonParser {
+
+abstract class JsonToString {
     @Override
     public String toString() {
         try {
