@@ -26,7 +26,7 @@ public class PlaceRestController {
     private final EntityManager entityManager;
 
     @Autowired
-    public PlaceRestController(UserRepository userRepository, PlaceRepository placeRepository, EntityManager entityManager) {
+    public PlaceRestController(UserRepository userRepository, PlaceRepository placeRepository, @SuppressWarnings("SpringJavaAutowiringInspection") EntityManager entityManager) {
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
         this.entityManager = entityManager;
@@ -43,17 +43,24 @@ public class PlaceRestController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> get(@RequestParam(value = "id") String id) {
+    public ResponseEntity<?> get(@RequestParam(value = "id", defaultValue = "") String id) {
         return new ResponseEntity<>(placeRepository.findById(new Id(Long.parseLong(id))).orElse(null),
                 null, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> post(@RequestParam(value = "name") String name) {
+    public ResponseEntity<?> post(@RequestParam(value = "name") String name,
+                                  @RequestParam(value = "owner") String owner) {
+        Id id = new Id(Long.parseLong(owner));
+        final Place[] place = {null};
+        userRepository.findById(id).ifPresent(user1 -> {
+            place[0] = new Place(name, user1);
+            placeRepository.save(place[0]);
+            user1.getPlacesCreated().add(place[0]);
+            userRepository.save(user1);
 
-        Place place = new Place(name);
-        System.out.println(place);
-        return new ResponseEntity<>(placeRepository.save(place), null, HttpStatus.OK);
+        });
+        return new ResponseEntity<>(place[0], null, HttpStatus.OK);
     }
 
 }

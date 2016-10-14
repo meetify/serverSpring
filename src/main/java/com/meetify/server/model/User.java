@@ -3,10 +3,7 @@ package com.meetify.server.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -27,6 +24,10 @@ public class User implements Serializable {
     @ElementCollection
     private Set<Id> friends;
 
+    @OneToMany
+    @ElementCollection
+    private Set<Place> placesCreated;
+
     public User(Id id, Set<Id> friends) {
         this.id = id;
         this.friends = friends;
@@ -37,6 +38,10 @@ public class User implements Serializable {
 
     public User(Id id) {
         this.id = id;
+    }
+
+    public Set<Place> getPlacesCreated() {
+        return placesCreated;
     }
 
     public Set<Id> getFriends() {

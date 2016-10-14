@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * Place class
@@ -19,12 +21,24 @@ public class Place {
     @EmbeddedId
     private Id id;
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "owner", nullable = false)
+    private User owner;
+
     private Place() {
+
     }
 
     public Place(String name) {
         this.name = name;
         this.id = new Id(nextId());
+    }
+
+    public Place(String name, User user) {
+        this(name);
+        this.name = name;
+        this.owner = user;
     }
 
     public static void setCurrentId(Long value) {
