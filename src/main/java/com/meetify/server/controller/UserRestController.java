@@ -29,11 +29,16 @@ public class UserRestController {
     public UserRestController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+    
+    private User get(Long id) {
+        return userRepository.findById(new Id(id)).orElse(null);
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> get(@RequestParam(value = "id") String id) {
-        return new ResponseEntity<>(userRepository.findById(new Id(Long.parseLong(id))).orElse(null),
-                null, HttpStatus.OK);
+        StringBuffer stringBuffer = new StringBuffer("");
+        Arrays.stream(id.split(",")).forEach(s -> stringBuffer.append(get(Long.parseLong(s))));
+        return new ResponseEntity<>(stringBuffer, null, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)

@@ -61,6 +61,14 @@ public class User implements Serializable {
     public void setFriends(Set<Id> friends) {
         this.friends = friends;
     }
+    
+    public Id getId() {
+        return id;
+    }
+    
+    public void setId(Id id) {
+        this.id = id;
+    }
 
     @Override
     public String toString() {
@@ -85,13 +93,5 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
-    }
-
-    public Id getId() {
-        return id;
-    }
-
-    public void setId(Id id) {
-        this.id = id;
     }
 }

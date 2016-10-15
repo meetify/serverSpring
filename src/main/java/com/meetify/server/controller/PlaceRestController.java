@@ -24,13 +24,11 @@ import java.util.Arrays;
 public class PlaceRestController {
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
-    private final EntityManager entityManager;
 
     @Autowired
     public PlaceRestController(UserRepository userRepository, PlaceRepository placeRepository, @SuppressWarnings("SpringJavaAutowiringInspection") EntityManager entityManager) {
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
-        this.entityManager = entityManager;
         //noinspection JpaQlInspection
         Object object = entityManager.createQuery("select max(place.id) from Place as place")
                 .getResultList().get(0);
@@ -57,7 +55,6 @@ public class PlaceRestController {
         StringBuilder response = new StringBuilder();
         userRepository.findById(id).ifPresent(user1 -> {
             Place place = new Place(name, user1);
-
             if (!allowed.equals("")) {
                 Arrays.stream(allowed.split(",")).forEach(s ->
                         userRepository.findById(new Id(Long.parseLong(s))).ifPresent(user -> {
@@ -67,7 +64,6 @@ public class PlaceRestController {
                         })
                 );
             }
-            placeRepository.save(place);
             user1.getCreated().add(place);
             userRepository.save(user1);
             placeRepository.save(place);

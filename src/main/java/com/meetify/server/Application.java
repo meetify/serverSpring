@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Application {
-    // TODO: 11.10.2016 improve database naming
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
