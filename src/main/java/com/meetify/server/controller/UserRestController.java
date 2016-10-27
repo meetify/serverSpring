@@ -46,7 +46,7 @@ public class UserRestController {
                                   @RequestParam(value = "friends", defaultValue = "") String friends) {
         Set<Id> set = new HashSet<>();
         if (!friends.equals("")) {
-            Arrays.stream(friends.split(",")).forEach(s -> set.add(new Id(Long.parseLong(s))));
+            Arrays.stream(friends.replaceAll("[^,\\d]", "").split(",")).forEach(s -> set.add(new Id(Long.parseLong(s))));
         }
         return new ResponseEntity<>(userRepository.save(new User(new Id(Long.parseLong(id)), set)), null, HttpStatus.OK);
     }
