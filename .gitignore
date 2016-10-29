@@ -1,10 +1,5 @@
 *.class
 .mtj.tmp/
-*.jar
-*.war
-*.ear
-hs_err_pid*
-.idea
-*.iml
+hs_err_pi
 out
 gen

@@ -23,17 +23,17 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 public class DatabaseConfig {
-
-
+    
+    
     @Autowired
     private Environment env;
     @Autowired
     private DataSource dataSource;
-
+    
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     private LocalContainerEntityManagerFactoryBean entityManagerFactory;
-
+    
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -43,7 +43,7 @@ public class DatabaseConfig {
         dataSource.setPassword(env.getProperty("db.password"));
         return dataSource;
     }
-
+    
     /**
      * Declare the JPA entity manager factory.
      */
@@ -51,17 +51,17 @@ public class DatabaseConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManagerFactory =
                 new LocalContainerEntityManagerFactoryBean();
-
+    
         entityManagerFactory.setDataSource(dataSource);
-
+    
         // Classpath scanning of @Component, @Service, etc annotated class
         entityManagerFactory.setPackagesToScan(
                 env.getProperty("entitymanager.packagesToScan"));
-
+    
         // Vendor adapter
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
-
+    
         // Hibernate properties
         Properties additionalProperties = new Properties();
         additionalProperties.put(
@@ -74,10 +74,10 @@ public class DatabaseConfig {
                 "hibernate.hbm2ddl.auto",
                 env.getProperty("hibernate.hbm2ddl.auto"));
         entityManagerFactory.setJpaProperties(additionalProperties);
-
+    
         return entityManagerFactory;
     }
-
+    
     /**
      * Declare the transaction manager.
      */
@@ -89,7 +89,7 @@ public class DatabaseConfig {
                 entityManagerFactory.getObject());
         return transactionManager;
     }
-
+    
     /**
      * PersistenceExceptionTranslationPostProcessor is a bean post processor
      * which adds an advisor to any bean annotated with Repository so that any
