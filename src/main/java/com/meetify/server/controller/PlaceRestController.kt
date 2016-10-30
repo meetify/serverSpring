@@ -2,6 +2,7 @@ package com.meetify.server.controller
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.meetify.server.model.Id
+import com.meetify.server.model.Location
 import com.meetify.server.model.Place
 import com.meetify.server.model.User
 import com.meetify.server.model.googleplace.GooglePlace
@@ -10,87 +11,112 @@ import com.meetify.server.model.googleplace.Result
 import com.meetify.server.repository.PlaceRepository
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.HttpRequest
+import com.meetify.server.utils.JsonUtils
+import com.meetify.server.utils.JsonUtils.mapper
+import com.meetify.server.utils.MultiSearchable
 import com.meetify.server.utils.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.persistence.EntityManager
 
+/**
+ * This class represents controller over places. It holds mapping '/place'.
+ * Also, it is layer between client and Google Places Web API.
+ * It's
+ * @author  Dmitry Baynak
+ * @version 0.0.1
+ * @since   0.0.1
+ * @param   userRepository  users repository.
+ * @param   placeRepository places repository.
+ * @param   entityManager   entity manager.
+ * @constructor             Autowired by Spring.
+ */
+@RestController @RequestMapping("/place")
+class PlaceRestController @Autowired constructor(private val userRepository: UserRepository,
+                                                 private val placeRepository: PlaceRepository,
+                                                 entityManager: EntityManager) : MultiSearchable<Place>() {
 
-@RestController
-@RequestMapping("/place")
-class PlaceRestController @Autowired constructor(private val userRepository: UserRepository, private val placeRepository: PlaceRepository, @SuppressWarnings("SpringJavaAutowiringInspection") entityManager: EntityManager) {
-    init {
-        val resp = entityManager.createQuery("select max(place.id) from Place as place").resultList[0]
-        val id: Id
-        if (resp == null) {
-            id = Id(0.toLong())
-        } else {
-            id = resp as Id
-        }
-        Place.currentId = id.id + 1
+    /**
+     * Returns Google Place, that downloaded from it's server.
+     * It has pre-converted photo links and it doesn't contain any places without photos.
+     * @param   locationJson    json representation of location near of which places are looking.
+     * @return                  google place, which can be easily serialized with Jackson JSON library.
+     */
+    @ResponseBody @RequestMapping("/nearby", method = arrayOf(RequestMethod.GET))
+    fun getNearby(@RequestParam(name = "location") locationJson: String): GooglePlace {
+        val location = mapper.readValue(locationJson, Location::class.java)
+        val googlePlace = jacksonObjectMapper().readValue(StringUtils.makeString(HttpRequest.request(location, "100")), GooglePlace::class.java)
+        googlePlace.filterPhotos().forEach { result -> result.photos.convertRefs(); }
+        return googlePlace
     }
 
-    @RequestMapping("/nearby")
-    fun getNearby(@RequestParam(value = "lat", defaultValue = "48.468488") lat: String,
-                  @RequestParam(value = "lon", defaultValue = "35.049684") lon: String,
-                  @RequestParam(value = "radius", defaultValue = "100") radius: String): ResponseEntity<*> {
-        try {
-            lat.toDouble()
-            lon.toDouble()
-            radius.toDouble()
-        } catch (e: Exception) {
-            return ResponseEntity<Any>(null, null, HttpStatus.FORBIDDEN)
-        }
-
-        val objectMapper = jacksonObjectMapper()
-        val googlePlace = objectMapper.readValue(StringUtils.makeString(HttpRequest.request(lat, lon, radius)), GooglePlace::class.java)
-        googlePlace.sort().forEach { result -> result.photos.convertRefs(); }
-        return ResponseEntity(googlePlace, null, HttpStatus.OK)
-
+    /**
+     * Returns a list with information about places.
+     * Unknown ids in [idsJson] list are ignored.
+     * @param   idsJson json representation of collection of the ids of requested places.
+     * @return          collection with places info.
+     */
+    @ResponseBody @RequestMapping(method = arrayOf(RequestMethod.GET))
+    fun get(@RequestParam(name = "ids") idsJson: String): ArrayList<Place> {
+        return get(placeRepository, JsonUtils.getList(idsJson))
     }
 
-    @RequestMapping(method = arrayOf(RequestMethod.GET))
-    fun get(@RequestParam(value = "id") userIds: String): ResponseEntity<*> {
-        val places = ArrayList<Place>()
-        userIds.replace("[^,\\d]".toRegex(), "").split(",").forEach { placeRepository.findById(Id(it)).ifPresent { places.add(it) } }
-        return ResponseEntity(places, null, HttpStatus.OK)
-    }
-
-    @RequestMapping(method = arrayOf(RequestMethod.POST))
-    fun post(@RequestParam(value = "name") name: String,
-             @RequestParam(value = "owner") owner: String,
-             @RequestParam(value = "allowed", defaultValue = "") allowed: String): ResponseEntity<*> {
-        var place = Place()
-        userRepository.findById(Id(owner)).ifPresent { owner ->
-            val usersToBeSaved = HashSet<User>()
-            place = Place(name, owner.id)
-            allowed.split(",").filter { it != "" }.forEach { id ->
-                userRepository.findById(Id(id)).ifPresent { allowedUser ->
-                    allowedUser.allowed += place.id
-                    place.allowed += allowedUser.id
-                    usersToBeSaved.add(allowedUser)
+    /**
+     * Method, that should be used create new users places.
+     * Always create new place, even if place with exactly the same info is already present in database.
+     * If owner of this place is not present in database, IllegalArgumentException is thrown.
+     * If some ids in allowed are not associated with existing users, they are ignored.
+     * @param   place   place, which should be created.
+     * @return          place, that was created if case of success.
+     */
+    @ResponseBody @RequestMapping(method = arrayOf(RequestMethod.POST))
+    fun post(@RequestBody place: Place): Place {
+        userRepository.findById(place.id).orElseThrow { throw IllegalArgumentException("owner not found") }.apply {
+            var usersToBeSaved: Set<User> = HashSet()
+            place.allowed.forEach {
+                userRepository.findById(it).ifPresent {
+                    it.allowed += place.id
+                    usersToBeSaved += it
                 }
             }
-            owner.created += place.id
-            usersToBeSaved.add(owner)
+            this.created += place.id
+            usersToBeSaved += this
             userRepository.save(usersToBeSaved)
             placeRepository.save(place)
         }
-        return ResponseEntity(place, null, HttpStatus.OK)
+        return place
     }
 
+    /**
+     * Dirty hack with places id. I wasn't able to create autoincrement embedded id, so it can be done with
+     * simple searching max of existing ids, or, if it's not presented in database, set it as 1.
+     */
+    init {
+        Place.currentId = 0
+        Optional.ofNullable(entityManager
+                .createQuery("select max(place.id) from Place as place")
+                .resultList[0] as Id?).ifPresent {
+            Place.currentId += it!!.id
+        }
+    }
+
+    /**
+     * Contains some useful methods, which are used to simplify code of some other methods.
+     */
     companion object {
+
+        /**
+         * This function is used to convert simple photo references to downloadable links.
+         */
         private fun List<Photo>.convertRefs() {
             forEach { photo -> photo.photoReference = HttpRequest.photoRefToUrl(photo.photoReference) }
         }
 
-        private fun GooglePlace.sort(): List<Result> {
+        /**
+         * This function is used to discard places, that don't contain any photos.
+         */
+        private fun GooglePlace.filterPhotos(): List<Result> {
             results = results.filter { it.photos.size > 0 }
             return results
         }

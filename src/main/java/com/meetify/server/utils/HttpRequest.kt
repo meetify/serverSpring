@@ -1,5 +1,6 @@
 package com.meetify.server.utils
 
+import com.meetify.server.model.Location
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -32,10 +33,10 @@ object HttpRequest {
         return ArrayList()
     }
 
-    fun request(lat: String, lng: String, radius: String): List<String> {
+    fun request(location: Location, radius: String): List<String> {
         try {
             val url = URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" +
-                    lat + "," + lng + "&" +
+                    location.lat + "," + location.lon + "&" +
                     "radius=" + radius + "&" +
                     "key=" + GOOGLE_API_KEY)
             return request(url)

@@ -2,10 +2,7 @@ package com.meetify.server.model
 
 import java.io.Serializable
 import java.util.*
-import javax.persistence.ElementCollection
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import javax.persistence.*
 
 
 @SuppressWarnings("unused")
@@ -13,9 +10,10 @@ import javax.persistence.Table
 @Entity
 @Table(name = "users")
 data class User(@EmbeddedId var id: Id = Id(0),
-                @ElementCollection var friends: Set<Id> = HashSet<Id>(),
-                @ElementCollection var created: Set<Id> = HashSet<Id>(),
-                @ElementCollection var allowed: Set<Id> = HashSet<Id>()) : Serializable {
+                @Embedded var location: Location = Location(),
+                @ElementCollection var friends: Set<Id> = HashSet(),
+                @ElementCollection var created: Set<Id> = HashSet(),
+                @ElementCollection var allowed: Set<Id> = HashSet()) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this.javaClass !== other.javaClass) return false
@@ -27,3 +25,4 @@ data class User(@EmbeddedId var id: Id = Id(0),
         return id.hashCode()
     }
 }
+

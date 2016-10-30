@@ -46,6 +46,8 @@ public class DatabaseConfig {
     
     /**
      * Declare the JPA entity manager factory.
+     *
+     * @return LocalContainerEntityManagerFactoryBean
      */
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -80,6 +82,8 @@ public class DatabaseConfig {
     
     /**
      * Declare the transaction manager.
+     *
+     * @return JpaTransactionManager
      */
     @Bean
     public JpaTransactionManager transactionManager() {
@@ -96,6 +100,8 @@ public class DatabaseConfig {
      * platform-specific exceptions are caught and then rethrown as one
      * Spring's unchecked data access exceptions (i.e. a subclass of
      * DataAccessException).
+     *
+     * @return PersistenceExceptionTranslationPostProcessor
      */
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
