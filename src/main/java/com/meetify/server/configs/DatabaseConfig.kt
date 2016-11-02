@@ -1,86 +1,89 @@
-//package com.meetify.server.configs
-//
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.context.annotation.Bean
-//import org.springframework.context.annotation.Configuration
-//import org.springframework.core.env.Environment
-//import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
-//import org.springframework.jdbc.datasource.DriverManagerDataSource
-//import org.springframework.orm.jpa.JpaTransactionManager
-//import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
-//import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
-//import org.springframework.transaction.annotation.EnableTransactionManagement
-//import java.util.*
-//import javax.sql.DataSource
-//
-//
-//@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
-//@Configuration
-//@EnableTransactionManagement
-//open class DatabaseConfig {
-//
-//
-//    @Autowired
-//    private val env: Environment? = null
-//    @Autowired
-//    private val dataSource: DataSource? = null
-//
-//    @SuppressWarnings("SpringJavaAutowiringInspection")
-//    @Autowired
-//    private val entityManagerFactory: LocalContainerEntityManagerFactoryBean? = null
-//
-//    @Bean
-//    open fun dataSource(): DataSource {
-//        val dataSource = DriverManagerDataSource()
-//        dataSource.setDriverClassName(env!!.getProperty("db.driver"))
-//        dataSource.url = env.getProperty("db.url")
-//        dataSource.username = env.getProperty("db.username")
-//        dataSource.password = env.getProperty("db.password")
-//        return dataSource
-//    }
-//
-//
-//    @Bean
-//    open fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
-//        val entityManagerFactory = LocalContainerEntityManagerFactoryBean()
-//
-//        entityManagerFactory.dataSource = dataSource
-//
-//        // Classpath scanning of @Component, @Service, etc annotated class
-//        entityManagerFactory.setPackagesToScan(
-//                env!!.getProperty("entitymanager.packagesToScan"))
-//
-//        // Vendor adapter
-//        val vendorAdapter = HibernateJpaVendorAdapter()
-//        entityManagerFactory.jpaVendorAdapter = vendorAdapter
-//
-//        // Hibernate properties
-//        val additionalProperties = Properties()
-//        additionalProperties.put(
-//                "hibernate.dialect",
-//                env.getProperty("hibernate.dialect"))
-//        additionalProperties.put(
-//                "hibernate.show_sql",
-//                env.getProperty("hibernate.show_sql"))
-//        additionalProperties.put(
-//                "hibernate.hbm2ddl.auto",
-//                env.getProperty("hibernate.hbm2ddl.auto"))
-//        entityManagerFactory.setJpaProperties(additionalProperties)
-//
-//        return entityManagerFactory
-//    }
-//
-//
-//    @Bean
-//    open fun transactionManager(): JpaTransactionManager {
-//        val transactionManager = JpaTransactionManager()
-//        transactionManager.entityManagerFactory = entityManagerFactory!!.`object`
-//        return transactionManager
-//    }
-//
-//
-//    @Bean
-//    open fun exceptionTranslation(): PersistenceExceptionTranslationPostProcessor {
-//        return PersistenceExceptionTranslationPostProcessor()
-//    }
-//}
+package com.meetify.server.configs
+
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
+import org.springframework.jdbc.datasource.DriverManagerDataSource
+import org.springframework.orm.jpa.JpaTransactionManager
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
+import org.springframework.transaction.annotation.EnableTransactionManagement
+import java.util.*
+import javax.sql.DataSource
+
+/**
+ * Class that used by Spring to configure Hibernate and database using application.properties.
+ * @author  Dmitry Baynak
+ * @version 0.0.1
+ * @since   0.0.1
+ * @property    env                     property that allows to load some config lines.
+ * @property    dataSource              property that allows to connect to database.
+ * @property    entityManagerFactory    factory that used to create entityManager instances.
+ */
+@Configuration @EnableTransactionManagement @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
+open class DatabaseConfig {
+
+    @Autowired
+    private val env: Environment? = null
+
+    @Autowired
+    private val dataSource: DataSource? = null
+
+    @Suppress("SpringKotlinAutowiring") @Autowired
+    private val entityManagerFactory: LocalContainerEntityManagerFactoryBean? = null
+
+    /**
+     * Declare the DataSource with parameters of application.properties.
+     * @return dataSource
+     */
+    @Bean
+    open fun dataSource(): DataSource = DriverManagerDataSource().apply {
+        setDriverClassName(env!!.getProperty("db.driver"))
+        url = env.getProperty("db.url")
+        username = env.getProperty("db.username")
+        password = env.getProperty("db.password")
+    }
+
+    /**
+     * Declare the JPA entity manager factory.
+     * @return LocalContainerEntityManagerFactoryBean
+     */
+    @Bean
+    open fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
+        return LocalContainerEntityManagerFactoryBean().apply {
+            this.dataSource = this@DatabaseConfig.dataSource!!
+            setPackagesToScan(env!!.getProperty("entitymanager.packagesToScan"))
+            jpaVendorAdapter = HibernateJpaVendorAdapter()
+            setJpaProperties(Properties().apply {
+                put("hibernate.dialect", env.getProperty("hibernate.dialect"))
+                put("hibernate.show_sql", env.getProperty("hibernate.show_sql"))
+                put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"))
+            })
+        }
+    }
+
+    /**
+     * Declare the transaction manager.
+     * @return JpaTransactionManager
+     */
+    @Bean
+    open fun transactionManager(): JpaTransactionManager {
+        return JpaTransactionManager().apply {
+            entityManagerFactory = this@DatabaseConfig.entityManagerFactory!!.`object`
+        }
+    }
+
+    /**
+     * PersistenceExceptionTranslationPostProcessor is a bean post processor
+     * which adds an advisor to any bean annotated with Repository so that any
+     * platform-specific exceptions are caught and then rethrown as one
+     * Spring's unchecked data access exceptions (i.e. a subclass of DataAccessException).
+     * @return PersistenceExceptionTranslationPostProcessor
+     */
+    @Bean
+    open fun exceptionTranslation(): PersistenceExceptionTranslationPostProcessor {
+        return PersistenceExceptionTranslationPostProcessor()
+    }
+}
