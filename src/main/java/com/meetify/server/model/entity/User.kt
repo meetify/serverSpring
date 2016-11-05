@@ -1,5 +1,6 @@
-package com.meetify.server.model
+package com.meetify.server.model.entity
 
+import com.meetify.server.model.Id
 import java.io.Serializable
 import java.util.*
 import javax.persistence.*

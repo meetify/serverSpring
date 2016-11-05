@@ -1,5 +1,6 @@
-package com.meetify.server.model
+package com.meetify.server.model.entity
 
+import com.meetify.server.model.Id
 import java.io.Serializable
 import javax.persistence.*
 
@@ -18,6 +19,6 @@ import javax.persistence.*
 @Table(name = "photos")
 class Photo(
         @EmbeddedId override var id: Id = Id(),
-        @AttributeOverride(name = "id", column = Column(name = "owner_id"))
+        @AttributeOverride(name = "id", column = javax.persistence.Column(name = "owner_id"))
         @Embedded var owner: Id = Id(),
         var uri: String = "") : BaseEntity(id), Serializable

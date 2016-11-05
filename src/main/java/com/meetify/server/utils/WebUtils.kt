@@ -1,8 +1,7 @@
 package com.meetify.server.utils
 
 import com.meetify.server.model.GooglePlace
-import com.meetify.server.model.Location
-import com.meetify.server.utils.WebUtils.GOOGLE_API_KEY
+import com.meetify.server.model.entity.Location
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -28,14 +27,14 @@ object WebUtils {
     fun request(url: URL): List<String> {
         val conn = url.openConnection() as HttpURLConnection
         conn.connect()
-        BufferedReader(InputStreamReader(conn.inputStream)).use { reader ->
+        BufferedReader(InputStreamReader(conn.inputStream)).use({ reader: BufferedReader ->
             val response = ArrayList<String>()
             reader.forEachLine {
                 response.add(it.trim(' '))
             }
 
             return response
-        }
+        })
     }
 
     /**
@@ -46,7 +45,7 @@ object WebUtils {
     fun request(location: Location, radius: String): GooglePlace {
         return JsonUtils.mapper.readValue(request(URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
                 "location=${location.lat},${location.lon}&radius=$radius&key=$GOOGLE_API_KEY"))
-                .let { StringBuilder().apply { forEach { append(it) } }.toString() }, GooglePlace::class.java)
+                .let ({ StringBuilder().apply { forEach { append(it) } }.toString(); }), GooglePlace::class.java)
     }
 
     /**

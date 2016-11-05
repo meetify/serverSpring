@@ -2,9 +2,8 @@
 
 package com.meetify.server.repository
 
-import com.meetify.server.controller.BaseController
-import com.meetify.server.model.BaseEntity
 import com.meetify.server.model.Id
+import com.meetify.server.model.entity.BaseEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.NoRepositoryBean
 import java.util.*

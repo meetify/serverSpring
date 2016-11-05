@@ -1,9 +1,9 @@
 package com.meetify.server.controller
 
 import com.meetify.server.model.GooglePlace
-import com.meetify.server.model.Location
-import com.meetify.server.model.Place
-import com.meetify.server.model.User
+import com.meetify.server.model.entity.Location
+import com.meetify.server.model.entity.Place
+import com.meetify.server.model.entity.User
 import com.meetify.server.repository.PlaceRepository
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.JsonUtils.mapper
@@ -72,7 +72,7 @@ class PlaceController @Autowired constructor(
      */
     override fun put(@RequestBody t: Place): Place {
         val place = super.put(t)
-        userRepository.findById(place.owner).orElseThrow { throw IllegalArgumentException("owner not found") }.let {
+        userRepository.findById(place.owner).orElseThrow { IllegalArgumentException("owner not found") }.let {
             HashSet<User>().apply {
                 place.allowed.forEach {
                     userRepository.findById(it).ifPresent {

@@ -1,4 +1,4 @@
-package com.meetify.server.model
+package com.meetify.server.model.entity
 
 import java.io.Serializable
 import javax.persistence.Embeddable

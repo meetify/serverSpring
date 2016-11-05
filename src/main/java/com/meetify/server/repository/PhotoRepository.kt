@@ -1,6 +1,6 @@
 package com.meetify.server.repository
 
-import com.meetify.server.model.Photo
+import com.meetify.server.model.entity.Photo
 
 /**
  * Interface, that used to provide layer between database and server logic by autowiring by server.

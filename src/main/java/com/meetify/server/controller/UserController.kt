@@ -1,7 +1,7 @@
 package com.meetify.server.controller
 
 import com.meetify.server.model.Id
-import com.meetify.server.model.User
+import com.meetify.server.model.entity.User
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.JsonUtils.mapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,5 +32,19 @@ class UserController @Autowired constructor(
     fun friends(@RequestParam(name = "id") idJson: String): ArrayList<User> = ArrayList<User>().apply {
         userRepository.findById(mapper.readValue(idJson, Id::class.java))
                 .ifPresent { addAll(getFromCollection(it.friends)) }
+    }
+
+    override fun post(@RequestBody t: User, @RequestParam(name = "create", defaultValue = "") create: String): User {
+        val u = userRepository.findById(t.id)
+        if (u.isPresent) {
+            val user = u.get()
+            t.allowed = user.allowed
+            t.created = user.created
+        }
+        return super.post(t, "")
+    }
+
+    override fun put(t: User): User {
+        throw UnsupportedOperationException("no put in /user")
     }
 }

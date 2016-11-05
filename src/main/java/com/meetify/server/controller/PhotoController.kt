@@ -1,6 +1,6 @@
 package com.meetify.server.controller
 
-import com.meetify.server.model.Photo
+import com.meetify.server.model.entity.Photo
 import com.meetify.server.repository.PhotoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
