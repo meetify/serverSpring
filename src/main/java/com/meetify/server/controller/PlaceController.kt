@@ -1,6 +1,9 @@
 package com.meetify.server.controller
 
-import com.meetify.server.model.*
+import com.meetify.server.model.GooglePlace
+import com.meetify.server.model.Location
+import com.meetify.server.model.Place
+import com.meetify.server.model.User
 import com.meetify.server.repository.PlaceRepository
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.JsonUtils.mapper
@@ -60,11 +63,6 @@ class PlaceController @Autowired constructor(
 //        }
 //        return place
 //    }
-
-    override fun get(idsJson: String): ArrayList<Place> = super.get(idsJson)
-
-    override fun post(t: Place, create: String): Place = super.post(t, create)
-
     /**
      * Method, that should be used create new users places with some generated id.
      * If owner of this place is not present in database, IllegalArgumentException is thrown.
@@ -72,9 +70,9 @@ class PlaceController @Autowired constructor(
      * @param   t   place, which should be created.
      * @return      place, that was created if case of success.
      */
-    override fun put(t: Place): Place {
+    override fun put(@RequestBody t: Place): Place {
         val place = super.put(t)
-        userRepository.findById(place.id).orElseThrow { throw IllegalArgumentException("owner not found") }.let {
+        userRepository.findById(place.owner).orElseThrow { throw IllegalArgumentException("owner not found") }.let {
             HashSet<User>().apply {
                 place.allowed.forEach {
                     userRepository.findById(it).ifPresent {
@@ -89,12 +87,4 @@ class PlaceController @Autowired constructor(
         }
 
     }
-
-    override fun delete(t: Place) = super.delete(t)
-
-    override fun getFromCollection(ids: Collection<Id>): ArrayList<Place> = super.getFromCollection(ids)
-
-    override fun runMaxQuery(t: Place): Id = super.runMaxQuery(t)
-
-    override fun generate(t: Place): Place = super.generate(t)
 }

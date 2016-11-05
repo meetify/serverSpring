@@ -24,8 +24,10 @@ import javax.persistence.*
 @Entity
 class Place(var name: String = "",
             var description: String = "",
-            @Embedded val owner: Id = Id(-1), //todo: rename this column
-            @Embedded val photo: Id = Id(-1), //todo: rename this column
+            @AttributeOverride(name = "id", column = Column(name = "owner_id"))
+            @Embedded val owner: Id = Id(-1),
+            @AttributeOverride(name = "id", column = Column(name = "photo_id"))
+            @Embedded val photo: Id = Id(-1),
             @EmbeddedId override var id: Id = Id(-1),
             @ElementCollection var allowed: Set<Id> = HashSet<Id>(),
             @Embedded var location: Location = Location()) : BaseEntity(id), Serializable

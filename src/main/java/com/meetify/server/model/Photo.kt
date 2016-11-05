@@ -1,11 +1,7 @@
 package com.meetify.server.model
 
 import java.io.Serializable
-import javax.persistence.Embedded
-import javax.persistence.EmbeddedId
-
-import javax.persistence.Entity
-import javax.persistence.Table
+import javax.persistence.*
 
 /**
  * This class is photo, that contains information about photo's id, owner id and uri.
@@ -20,6 +16,8 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "photos")
-class Photo(@EmbeddedId override var id: Id = Id(),
-            @Embedded var owner: Id = Id(),
-            var uri: String = "") : BaseEntity(id), Serializable
+class Photo(
+        @EmbeddedId override var id: Id = Id(),
+        @AttributeOverride(name = "id", column = Column(name = "owner_id"))
+        @Embedded var owner: Id = Id(),
+        var uri: String = "") : BaseEntity(id), Serializable

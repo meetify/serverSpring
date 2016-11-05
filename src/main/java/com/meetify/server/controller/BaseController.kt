@@ -4,6 +4,7 @@ import com.meetify.server.model.BaseEntity
 import com.meetify.server.model.Id
 import com.meetify.server.repository.BaseRepository
 import com.meetify.server.utils.JsonUtils
+import com.meetify.server.utils.JsonUtils.mapper
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.persistence.EntityManager
@@ -42,7 +43,9 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      */
     @ResponseBody @PostMapping
     open fun post(@RequestBody t: T, @RequestParam(name = "create", defaultValue = "") create: String): T {
-        return repo.save(if (create.isEmpty()) {
+        println(">$create<")
+        println(mapper.writeValueAsString(t))
+        return repo.save(if (create.trim().isEmpty()) {
             t
         } else {
             generate(t)

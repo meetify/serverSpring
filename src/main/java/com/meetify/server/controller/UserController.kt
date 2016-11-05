@@ -33,32 +33,4 @@ class UserController @Autowired constructor(
         userRepository.findById(mapper.readValue(idJson, Id::class.java))
                 .ifPresent { addAll(getFromCollection(it.friends)) }
     }
-
-    override fun get(idsJson: String): ArrayList<User> {
-        return super.get(idsJson)
-    }
-
-    override fun post(t: User, create: String): User {
-        return super.post(t, create)
-    }
-
-    override fun put(t: User): User {
-        return super.put(t)
-    }
-
-    override fun delete(t: User) {
-        super.delete(t)
-    }
-
-    override fun getFromCollection(ids: Collection<Id>): ArrayList<User> {
-        return super.getFromCollection(ids)
-    }
-
-    override fun runMaxQuery(t: User): Id {
-        return super.runMaxQuery(t)
-    }
-
-    override fun generate(t: User): User {
-        return super.generate(t)
-    }
 }
