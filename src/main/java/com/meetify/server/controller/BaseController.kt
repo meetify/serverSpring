@@ -37,7 +37,8 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * server trying to save object with generated id,
      * but it isn't allowed when Controller doesn't override method [post]. For example,
      * it there is no way to generate id for users, but it is quite easy for places.
-     * @param   t json representation of T instance.
+     * @param   t       json representation of T instance.
+     * @param   create  if this value isn't empty,
      * @return    saved object
      */
     @ResponseBody @PostMapping

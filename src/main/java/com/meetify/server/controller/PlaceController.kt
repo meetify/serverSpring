@@ -85,6 +85,16 @@ class PlaceController @Autowired constructor(
             }
             return place
         }
+    }
 
+    /**
+     * Method, that should be used create new users places with some generated id.
+     * If owner of this place is not present in database, IllegalArgumentException is thrown.
+     * If some ids in allowed are not associated with existing users, they are ignored.
+     * @param   t   place, which should be created.
+     * @return      place, that was created if case of success.
+     */
+    override fun post(@RequestBody t: Place, @RequestParam(name = "create", defaultValue = "") create: String): Place {
+        return if (create.trim().isEmpty()) return repo.save(t) else put(t)
     }
 }

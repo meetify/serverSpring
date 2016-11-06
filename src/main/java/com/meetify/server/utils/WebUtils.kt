@@ -2,6 +2,7 @@ package com.meetify.server.utils
 
 import com.meetify.server.model.GooglePlace
 import com.meetify.server.model.entity.Location
+import com.meetify.server.utils.WebUtils.GOOGLE_API_KEY
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -17,7 +18,7 @@ import java.util.*
  * @since       0.0.1
  */
 object WebUtils {
-    private val GOOGLE_API_KEY = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
+    val GOOGLE_API_KEY = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
 
     /**
      * Method that can be used to perform some HTTP(S) requests.
@@ -43,9 +44,13 @@ object WebUtils {
      * @return parsed google place.
      */
     fun request(location: Location, radius: String): GooglePlace {
-        return JsonUtils.mapper.readValue(request(URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
-                "location=${location.lat},${location.lon}&radius=$radius&key=$GOOGLE_API_KEY"))
-                .let ({ StringBuilder().apply { forEach { append(it) } }.toString(); }), GooglePlace::class.java)
+        return JsonUtils.mapper.readValue(request(makeUrl(location, radius))
+                .let({ StringBuilder().apply { it.forEach { append(it) } }.toString(); }), GooglePlace::class.java)
+    }
+
+    private fun makeUrl(location: Location, radius: String): URL {
+        return URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
+                "location=${location.lat},${location.lon}&radius=$radius&key=$GOOGLE_API_KEY")
     }
 
     /**
