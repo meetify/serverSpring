@@ -5,14 +5,14 @@ import java.io.Serializable
 import javax.persistence.*
 
 /**
- * This class is photo, that contains information about photo's id, owner id and uri.
- * @author      Dmitry Baynak
+ * Фотографія, яка використовується у певному об'єкті.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
- * @property    id      Id
- * @property    owner   owner id
- * @property    uri     where is photo located (it can be as file:/// or http(s)://)
- * @constructor defined photo's properties.
+ * @property    id      ідентифікатор фотографії.
+ * @property    owner   ідентифікатор володаря фотографії.
+ * @property    uri     розташування фотографії (як file:///, так і http(s)://)
+ * @constructor приймає певні необхідні параметри.
  */
 
 @Entity

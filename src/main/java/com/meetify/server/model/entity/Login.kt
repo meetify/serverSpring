@@ -7,7 +7,7 @@ import javax.persistence.Entity
 import javax.persistence.Table
 
 /**
- * Created by Maks on 05.11.2016.
+ * @suppress
  */
 @Entity
 @Table(name = "logins")

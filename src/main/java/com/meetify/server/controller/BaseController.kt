@@ -9,82 +9,87 @@ import java.util.*
 import javax.persistence.EntityManager
 
 /**
- * This class represents some base controller. It has pre-implemented methods get, post, put, delete.
- * They are implemented in that way so they can be used without modifications on some usual tasks.
- * @author  Dmitry Baynak
+ * Цей клас є абстрактним базовим для більшості контролерів.
+ * Він надає певні методи для позбавлення необхідності у реалізації ідентичних для усіх контролерів методів.
+ * Так, наприклад, методи в [PhotoController] повністю наслідувані від цього класу, у інших - реалізовані лише окремі методи.
+ * @author  Дмитро Байнак
  * @version 0.0.1
  * @since   0.0.1
- * @property    repo    Some custom repository that represents connection with some database
- * @property    manager Entity manager used for queries.
- * @constructor         Autowired by Spring.
+ * @property    repo    Репозиторій, який визначений за рахунок Generic-типу при оголошенні класу.
+ * @property    manager Диспетчер сутностей, який є необхідним для запитів до бази даних.
+ * @constructor         Приймає усі поля класу, які мають бути передані за рахунок @Autowired-аннотації при конструкторі класів-спадкоємців.
  */
 @Suppress("unused")
 abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
                                               val manager: EntityManager) {
 
     /**
-     * Returns a list with information about Ts.
-     * Unknown ids in [idsJson] list are ignored.
-     * @param   idsJson json representation of collection of the ids of requested Ts.
-     * @return          collection with Ts info.
+     * Повертає колекцію з інформацією про необхідні об'єкти.
+     * Невідомі ідентифікатори у [idsJson] просто ігноруються.
+     * @param   idsJson json представлення колекції ідентифікаторів.
+     * @return          колекція із знайденою інформацією.
      */
     @ResponseBody @GetMapping
     open fun get(@RequestParam(name = "ids") idsJson: String): ArrayList<T> = getFromCollection(JsonUtils.getList(idsJson))
 
     /**
-     * Creates or updates T object. If object with the same id was found, it updates info about selected place.
-     * Otherwise, it just saves new object. If param 'create' contains non-empty string,
-     * server trying to save object with generated id,
-     * but it isn't allowed when Controller doesn't override method [post]. For example,
-     * it there is no way to generate id for users, but it is quite easy for places.
-     * @param   t       json representation of T instance.
-     * @param   create  if this value isn't empty,
-     * @return    saved object
+     * Створює чи оновлює інформацію про певний об'єкт.
+     * Якщо заданий параметер [create], то у будь-якому випадку буде згенерований певний ідентифікатор,
+     * таким чином у базу даних буде переданий новий унікальний для бази об'єкт.
+     * Інакше, сервер просто робить спробу записати у базу передану інформацію (це і є способом оновлення).
+     * @param   t       json представлення екземляру T.
+     * @param   create  параметр, який впливає на необхідність генерації ідентифікатору.
+     * @return    збережений об'єкт.
      */
     @ResponseBody @PostMapping
-    open fun post(@RequestBody t: T, @RequestParam(name = "create", defaultValue = "") create: String): T {
-        return repo.save(if (create.trim().isEmpty()) t else generate(t))
-    }
+    open fun post(@RequestBody t: T,
+                  @RequestParam(name = "create", defaultValue = "") create: String): T = repo.save(if (create.trim().isEmpty()) t else generate(t))
 
     /**
-     * Creates new Object with some generated Id.
-     * @param   t json representation of T instance.
-     * @return    saved object
+     * Є аналогом методу [post], за винятком того, що цей метод у будь-якому випадку генерує який-небудь ідентифікатор.
+     * @param   t json представлення екземляру T.
+     * @return    збережений об'єкт.
      */
     @ResponseBody @PutMapping
     open fun put(@RequestBody t: T): T = repo.save(generate(t))
 
     /**
-     * Deletes given object.
-     * @param   t json representation of T instance.
+     * Видаляє переданий об'єкт з бази даних.
+     * @param   t json представлення екземляру T.
      */
     @ResponseBody @DeleteMapping
     open fun delete(@RequestBody t: T) = repo.delete(t)
 
     /**
-     * This function allows to map some [ids] to objects.
-     * If some id doesn't have mapping, it is simply ignored.
-     * @param   ids Collection that contains some ids.
-     * @return      Collection that contains the instances of defined objects.
+     * Функція, що дозволяє відобразити певні індентифікатори до їх об'єктів у базі даних.
+     * Якщо ідентифікатор не має відображення, він ігнорується.
+     * @param   ids Колекція ідентифікаторів.
+     * @return      Список знайдених об'єктів.
      */
-    open fun getFromCollection(ids: Collection<Id>): ArrayList<T> = ArrayList<T>().apply { ids.forEach { repo.findById(it).ifPresent { add(it) } } }
-
-    /**
-     * Function that allows to find some maximum id in the table which the [t] belongs.
-     * String.
-     * String.
-     * @param   t   Instance of some class, in which should maximum id be found.
-     * @return      Id that has maximum id + 1.
-     */
-    open fun runMaxQuery(t: T): Id {
-        return Optional.ofNullable(manager
-                .createQuery("select max(t.id) from ${t.javaClass.name} as t")
-                .resultList[0]).orElse(Id(-1)) as Id
+    internal open fun getFromCollection(ids: Collection<Id>): ArrayList<T> = ArrayList<T>().apply {
+        ids.forEach { repo.findById(it).ifPresent { add(it) } }
     }
 
+//    /**
+//     * Функція, яка
+//     * Function that allows to find some maximum id in the table which the [t] belongs.
+//     * @param   t   Instance of some class, in which should maximum id be found.
+//     * @return      Id that has maximum id + 1.
+//     */
+//    internal open fun runMaxQuery(t: T): Id {
+//        return Optional.ofNullable(manager
+//                .createQuery("select max(t.id) from ${t.javaClass.name} as t")
+//                .resultList[0]).orElse(Id(-1)) as Id
+//    }
+
     /**
-     * Function which puts on t.id maximum id in the table which the object belongs.
-     * @return      modified T.
+     * Функція, яка модифікує об'єкт шляхом генерації певного унікального ідентифікатору.
+     * @param   t   об'єкт, ідентифікатор якого має бути згенерованим.
+     * @return      модифікований переданий параметр.
      */
-    open fun generate(t: T): T = t.apply { t.id = runMaxQuery(this).apply { id++ } }
+    internal open fun generate(t: T): T = t.apply {
+        t.id = (Optional.ofNullable(manager
+                .createQuery("select max(t.id) from ${t.javaClass.name} as t")
+                .resultList[0]).orElse(Id(-1)) as Id).apply { id++ }
+    }
 }

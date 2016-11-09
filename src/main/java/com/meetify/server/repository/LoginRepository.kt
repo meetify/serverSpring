@@ -3,6 +3,6 @@ package com.meetify.server.repository
 import com.meetify.server.model.entity.Login
 
 /**
- * Created by Maks on 05.11.2016.
+ * @suppress
  */
 interface LoginRepository : BaseRepository<Login>

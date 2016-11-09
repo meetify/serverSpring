@@ -10,8 +10,8 @@ import java.util.*
 import javax.persistence.EntityManager
 
 /**
- * This class represents controller over users. It holds mapping '/user'.
- * @author  Dmitry Baynak
+ * Цей клас є контролером користувачів.
+ * @author  Дмитро Байнак
  * @version 0.0.1
  * @since   0.0.1
  * @property   userRepository  users repository, which is provided by Spring & Hibernate.
@@ -23,10 +23,10 @@ class UserController @Autowired constructor(
         entityManager: EntityManager) : BaseController<User>(userRepository, entityManager) {
 
     /**
-     * Returns a list with information about friends of selected user.
-     * If some friends are unknown, they are ignored.
-     * @param   idJson  json representation of id of user, which friends should be returned.
-     * @return          list with friends info.
+     * Метод, який використовується для пошуку друзів певного користувача.
+     * Якщо певних друзів немає в базі, то вони ігноруються і не додаються до відповіді.
+     * @param   idJson  ідентифікатор користувача, друзі якого мають бути повернені.
+     * @return          список друзів переданого користувача.
      */
     @ResponseBody @RequestMapping("/friends") @GetMapping
     fun friends(@RequestParam(name = "id") idJson: String): ArrayList<User> = ArrayList<User>().apply {
@@ -44,7 +44,20 @@ class UserController @Autowired constructor(
         return super.post(t, "")
     }
 
+    /**
+     * Заборонений для використання. Повертає UnsupportedOperationException при спробі використання.
+     * @param   t json представлення екземляру T.
+     * @return    збережений об'єкт.
+     */
     override fun put(t: User): User {
         throw UnsupportedOperationException("no put in /user")
+    }
+
+    override fun get(idsJson: String): ArrayList<User> {
+        return super.get(idsJson)
+    }
+
+    override fun delete(t: User) {
+        super.delete(t)
     }
 }

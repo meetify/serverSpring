@@ -8,17 +8,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 
 
 /**
- * Main class, that is marked as SpringBootApplication, so it's used to launch server.
- * @author  Dmitry Baynak
+ * Основний класс, який має аннотацію SpringBootApplication і відповідний статичний метод.
+ * Використовується для запуску сервера.
+ * @author  Дмитро Байнак
  * @version 0.0.1
  * @since   0.0.1
- * @constructor empty.
  */
 @SpringBootApplication
 open class Application {
     companion object {
         /**
-         * Main method, that is used to run server.
+         * Main-метод, у якому відбувається запуск сервера.
          * @param   args    command-line options
          */
         @JvmStatic fun main(args: Array<String>) {

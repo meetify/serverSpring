@@ -14,15 +14,13 @@ import java.util.*
 import javax.persistence.EntityManager
 
 /**
- * This class represents controller over places. It holds mapping '/place'.
- * Also, it is layer between client and Google Places Web API.
- * @author  Dmitry Baynak
+ * Цей клас є контролером фотографій. Він також надає доступу до Google Places Web API разом із [GooglePlace].
+ * @author  Дмитро Байнак
  * @version 0.0.1
  * @since   0.0.1
- * @property    userRepository  users repository.
- * @property    placeRepository places repository.
- * @param       entityManager   entity manager.
- * @constructor             Autowired by Spring.
+ * @property    userRepository  репозиторій користувачів.
+ * @property    placeRepository репозиторій місць.
+ * @param       entityManager   диспетчер сутностей.
  */
 
 @RestController @RequestMapping("/place")
@@ -32,10 +30,10 @@ class PlaceController @Autowired constructor(
         entityManager: EntityManager) : BaseController<Place>(placeRepository, entityManager) {
 
     /**
-     * Returns Google Place, that downloaded from it's server.
-     * It has pre-converted photo links and it doesn't contain any places without photos.
-     * @param   locationJson    json representation of location near of which places are looking.
-     * @return                  google place, which can be easily serialized with Jackson JSON library.
+     * Метод, що повертає перечень місць, які були отримані за допомогою Google Places Web API.
+     * Як додаток, сервер автоматично конвертує посилання на фото і не передає інформацію про ті місця, у яких немає фотографій.
+     * @param   locationJson    json представлення координат місця, навколо якого ведеться пошук.
+     * @return                  перелік місць.
      */
     @ResponseBody @RequestMapping("/nearby", method = arrayOf(RequestMethod.GET))
     fun nearby(@RequestParam(name = "location") locationJson: String): GooglePlace {
@@ -64,11 +62,12 @@ class PlaceController @Autowired constructor(
 //        return place
 //    }
     /**
-     * Method, that should be used create new users places with some generated id.
-     * If owner of this place is not present in database, IllegalArgumentException is thrown.
-     * If some ids in allowed are not associated with existing users, they are ignored.
-     * @param   t   place, which should be created.
-     * @return      place, that was created if case of success.
+     * Метод, який є перевизначенням існуючого для створення нових місць з певних генерованим ідентифікатором.
+     * Якщо не має користувача, який мав би бути володарем цього місця, сервер передає виняток.
+     * Якщо який-небудь переданий ідентифікатор у відповідній колекції користувачів,
+     * які мають доступ до місця, не відповідає користувачеві, він ігнорується.
+     * @param   t   місце, яке має бути створеним.
+     * @return      створене місце.
      */
     override fun put(@RequestBody t: Place): Place {
         val place = super.put(t)
@@ -88,13 +87,21 @@ class PlaceController @Autowired constructor(
     }
 
     /**
-     * Method, that should be used create new users places with some generated id.
-     * If owner of this place is not present in database, IllegalArgumentException is thrown.
-     * If some ids in allowed are not associated with existing users, they are ignored.
-     * @param   t   place, which should be created.
-     * @return      place, that was created if case of success.
+     * Метод, який викликає метод [put] при заданому параметрі [create],
+     * інакше просто у базі оновлюється переданий об'єкт.
+     * @param   t   місце, яке має бути створено/оновлене.
+     * @return      оновлене/створене місце.
      */
     override fun post(@RequestBody t: Place, @RequestParam(name = "create", defaultValue = "") create: String): Place {
+        //todo: if create.isEmpty() => check that we're updating some existing object
         return if (create.trim().isEmpty()) return repo.save(t) else put(t)
+    }
+
+    override fun get(idsJson: String): ArrayList<Place> {
+        return super.get(idsJson)
+    }
+
+    override fun delete(t: Place) {
+        super.delete(t)
     }
 }

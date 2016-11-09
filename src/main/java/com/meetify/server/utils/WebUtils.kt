@@ -11,9 +11,9 @@ import java.util.*
 
 
 /**
- * This singleton contains some useful methods to work some web-requests.
- * @property GOOGLE_API_KEY contains server's Google API key.
- * @author      Dmitry Baynak
+ * об'єкт, який містить у собі деякі методи для спрощення роботи з запитами до інших ресурсів.
+ * @property GOOGLE_API_KEY Google API ключ.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
  */
@@ -21,9 +21,9 @@ object WebUtils {
     val GOOGLE_API_KEY = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
 
     /**
-     * Method that can be used to perform some HTTP(S) requests.
+     * Метод, що використовується для виконання деяких HTTP(S) запитів.
      * @param url URL.
-     * @return list of strings, that are response of request.
+     * @return список рядків, які є відповіддю на запит.
      */
     fun request(url: URL): List<String> {
         val conn = url.openConnection() as HttpURLConnection
@@ -39,9 +39,10 @@ object WebUtils {
     }
 
     /**
-     * Method that can be used to get GooglePlace with some information about it.
-     * @param location location of place, near of which places should be found.
-     * @return parsed google place.
+     * Метод, що використовується для отримання переліку місць із Google Place Web API.
+     * @param location місце, навколо якого ведеться пошук.
+     * @param radius радіус, із яким ведеться такий пошук.
+     * @return екземпляр класу [GooglePlace].
      */
     fun request(location: Location, radius: String): GooglePlace {
         return JsonUtils.mapper.readValue(request(makeUrl(location, radius))
@@ -54,10 +55,10 @@ object WebUtils {
     }
 
     /**
-     * Method that can be used to convert unusable references like CoQBcwAAAF...
-     * (trimmed due to big size) to useful links.
-     * @param photoRef photo reference.
-     * @return converted reference.
+     * Метод для конвертації звичайних ідентифікаторів (типу CoQBcwAAAF...)
+     * фото з серверу Google на зручні для використання посилання.
+     * @param photoRef посилання Google-типу.
+     * @return конвертоване посилання.
      */
     fun replaceRefs(photoRef: String): String = "https://maps.googleapis.com/maps/api/place/photo?" +
             "photoreference=$photoRef&key=$GOOGLE_API_KEY&maxwidth=600"

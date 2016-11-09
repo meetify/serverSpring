@@ -5,12 +5,12 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 
 /**
- * This class is embedded id for all entity classes. It's expressed in [BaseEntity] which contains instance of Id.
- * @author      Dmitry Baynak
+ * Цей клас використовується як вбудовуваний ідентифікатор для всіх класів, які є JPA-сутностями.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
- * @property    id  id
- * @constructor takes [id].
+ * @property    id  ідентифікатор
+ * @constructor приймає [id].
  */
 @Embeddable
 data class Id(@Column(insertable = false, updatable = false) var id: Long = 0) : Serializable

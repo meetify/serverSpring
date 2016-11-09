@@ -9,20 +9,20 @@ import org.springframework.data.repository.NoRepositoryBean
 import java.util.*
 
 /**
- * Interface, that marked as @NoRepositoryBean, because it is developed to be extended by another interfaces.
- * It extends usual JpaRepository with method [findById].
- * This allowed to develop [BaseController] with [BaseEntity] to simplify implementing
- * some another controllers by generifying methods.
- * @author      Dmitry Baynak
+ * Інтерфейс, який відмічен @NoRepositoryBean, адже він використовується для наслідування іншими інтерфейсами.
+ * Розширення, у порівнянні із JpaRepository, полягає в [findById] методі.
+ * Цей інтерфейс разом із [com.meetify.server.controller.BaseController] та [BaseEntity] були створені для спрощення окремих моментів у
+ * реалізації контролерів.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
  */
 @NoRepositoryBean
 interface BaseRepository<T : BaseEntity> : JpaRepository<T, Id> {
     /**
-     * This method allows finding object by param [id].
-     * @param   id  id of object that should be found in database.
-     * @return  optional that has information about found object.
+     * Дозволяє знаходити об'єкт за допомогою [id].
+     * @param   id  ідентифікатор, за яким ведеться пошук.
+     * @return  монада Optional, яка містить інформацію про знайдений об'єкт.
      */
     fun findById(id: Id): Optional<T>
 }

@@ -7,9 +7,9 @@ import com.meetify.server.utils.JsonUtils.mapper
 import java.util.*
 
 /**
- * This singleton contains some useful methods to work with JSON.
- * @property mapper kotlin's mapper.
- * @author      Dmitry Baynak
+ * Цей об'єкт має в собі методи для роботи з JSON.
+ * @property mapper об'єкт, який виконує серіалізацію/десеріалізацію.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
  */
@@ -17,10 +17,10 @@ object JsonUtils {
     val mapper = jacksonObjectMapper()
 
     /**
-     * Method that used to escape parsing LinkedHashMap in each method.
-     * If it fails on line with adding to ArrayList<Id> with casting, it's caused by incorrect data.
-     * @param json json representation of Collection<Id>
-     * @return parsed collection with ids.
+     * Метод, який використовується для позбавлення від LinkedHashMap під час десеріалізації
+     * списку ідентифікаторів.
+     * @param json json представлення колекції ідентифікаторів.
+     * @return отримана колекція ідідентифікаторів.
      */
     fun getList(json: String): ArrayList<Id> {
         return ArrayList<Id>().apply {

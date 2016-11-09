@@ -7,16 +7,16 @@ import javax.persistence.*
 
 
 /**
- * This class is photo, that contains information about photo's id, owner id and uri.
- * @author      Dmitry Baynak
+ * Користувач, ідентифікатор якого відповідає його профілеві у соціальній мережі ВКонтакті.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
- * @property    id          Id
- * @property    location    where is geographically place located.
- * @property    allowed     collection of places, where user has access.
- * @property    created     collection of places, which are created by this user.
- * @property    friends     collection of users, who are user's friends.
- * @constructor defined place's properties.
+ * @property    id          ідентифікатор.
+ * @property    location    де у поточний момент часу знаходиться користувач.
+ * @property    allowed     список місць, до яких був запрошений даний користувач.
+ * @property    created     список місць, які створив даний користувач.
+ * @property    friends     список друзів користувача.
+ * @constructor приймає певні необхідні параметри.
  */
 @Entity
 @Table(name = "users")

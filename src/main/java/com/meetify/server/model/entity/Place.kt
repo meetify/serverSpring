@@ -7,18 +7,18 @@ import javax.persistence.*
 
 
 /**
- * This class is place, that contains information place.
- * @author      Dmitry Baynak
+ * Місце, яке створене певним користувачем із певними правами доступу для інших.
+ * @author      Дмитро Байнак
  * @version     0.0.1
  * @since       0.0.1
- * @property    name        place name.
- * @property    description place description.
- * @property    id          Id.
- * @property    owner       owner id.
- * @property    photo       photo id.
- * @property    location    where is geographically place located.
- * @property    allowed     collection with users, which can view info about this place.
- * @constructor defined place's properties.
+ * @property    name        назва.
+ * @property    description деяка додаткова інформація.
+ * @property    id          ідентифікатор.
+ * @property    owner       ідентифікатор володаря.
+ * @property    photo       ідентифікатор фотографії.
+ * @property    location    розташування місця.
+ * @property    allowed     список користувачів, які мають доступ до місця.
+ * @constructor приймає певні необхідні параметри.
  */
 
 @Table(name = "places")

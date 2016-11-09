@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 /**
- * Created by Maks on 05.11.2016.
+ * @suppress
  */
 @RestController @RequestMapping("/login")
 class LoginController @Autowired constructor(private val loginRepository: LoginRepository,

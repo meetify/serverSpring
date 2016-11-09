@@ -14,13 +14,13 @@ import java.util.*
 import javax.sql.DataSource
 
 /**
- * Class that used by Spring to configure Hibernate and database using application.properties.
- * @author  Dmitry Baynak
+ * Клас, який використовується самим фреймворком Spring для конфігурації Hibernate.
+ * @author  Дмитро Байнак
  * @version 0.0.1
  * @since   0.0.1
- * @property    env                     property that allows to load some config lines.
- * @property    dataSource              property that allows to connect to database.
- * @property    entityManagerFactory    factory that used to create entityManager instances.
+ * @property    env                     поле, що дозволяє завантажувати конфігурацію, задану в application.properties.
+ * @property    dataSource              поле, що надає доступу до бази даних.
+ * @property    entityManagerFactory    фабрика, що дозволяє створити екземляри entityManager.
  */
 @Configuration @EnableTransactionManagement @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
 open class DatabaseConfig {
@@ -35,7 +35,7 @@ open class DatabaseConfig {
     private val entityManagerFactory: LocalContainerEntityManagerFactoryBean? = null
 
     /**
-     * Declare the DataSource with parameters of application.properties.
+     * Метод, що дозволяє створити DataSource з параметрами, заданими в application.properties
      * @return dataSource
      */
     @Bean
@@ -47,7 +47,7 @@ open class DatabaseConfig {
     }
 
     /**
-     * Declare the JPA entity manager factory.
+     * Метод, що дозволяє створити фабрику диспетчерів сутностей.
      * @return LocalContainerEntityManagerFactoryBean
      */
     @Bean
@@ -65,7 +65,7 @@ open class DatabaseConfig {
     }
 
     /**
-     * Declare the transaction manager.
+     * Метод, що дозволяє створити менеджер транзакцій.
      * @return JpaTransactionManager
      */
     @Bean
@@ -76,10 +76,9 @@ open class DatabaseConfig {
     }
 
     /**
-     * PersistenceExceptionTranslationPostProcessor is a bean post processor
-     * which adds an advisor to any bean annotated with Repository so that any
-     * platform-specific exceptions are caught and then rethrown as one
-     * Spring's unchecked data access exceptions (i.e. a subclass of DataAccessException).
+     * PersistenceExceptionTranslationPostProcessor це компонентний пост-процесор,
+     * який дає змоги будь-якій компоненті із аннотацією Repository
+     * "кидати" специфічні відловлювані винятки і передавати їх фреймворкові.
      * @return PersistenceExceptionTranslationPostProcessor
      */
     @Bean

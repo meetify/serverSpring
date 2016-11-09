@@ -3,18 +3,18 @@ package com.meetify.server.model.entity
 import com.meetify.server.model.Id
 
 /**
- * This class is used to be extended by classes, which has Id and can be accessed by this Id.
- * @author      Dmitry Baynak
+ * Цей клас використовується для наслідування іншими класами, які мають [Id].
+ * @author      Дмитро Байнак
  * @version     0.0.1
- * @property    id  id
+ * @property    id  ідентифікатор.
  * @since       0.0.1
  */
 abstract class BaseEntity(open var id: Id = Id()) {
 
     /**
-     * Equals method, that is overridden from Kotlin's Any.
-     * @param   other   some object, with which should be compared current object using value of [id]
-     * @return  result of comparing
+     * Перевизначений із Any (аналог Object) метод equals.
+     * @param   other   деякий об'єкт, із яким має бути порівняння за [id].
+     * @return  булевий результат.
      */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -23,8 +23,8 @@ abstract class BaseEntity(open var id: Id = Id()) {
     }
 
     /**
-     * Hashcode method, that is overridden from Kotlin's Any.
-     * @return  hashcode of id.
+     * Перевизначений із Any (аналог Object) метод hashcode.
+     * @return  хешкод ідентифікатору.
      */
     override fun hashCode() = id.hashCode()
 }
