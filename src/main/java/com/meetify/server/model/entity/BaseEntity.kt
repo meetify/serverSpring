@@ -4,7 +4,6 @@ import com.meetify.server.model.Id
 
 /**
  * This class is used to be extended by classes, which has Id and can be accessed by this Id.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @property    id  id
  * @since       0.0.1
@@ -27,4 +26,6 @@ abstract class BaseEntity(open var id: Id = Id()) {
      * @return  hashcode of id.
      */
     override fun hashCode() = id.hashCode()
+
+    abstract fun isAvailable(id: Id): Boolean
 }

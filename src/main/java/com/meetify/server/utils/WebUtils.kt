@@ -13,7 +13,6 @@ import java.util.*
 /**
  * This singleton contains some useful methods to work some web-requests.
  * @property GOOGLE_API_KEY contains server's Google API key.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  */

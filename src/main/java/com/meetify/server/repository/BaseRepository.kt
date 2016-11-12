@@ -13,7 +13,6 @@ import java.util.*
  * It extends usual JpaRepository with method [findById].
  * This allowed to develop [BaseController] with [BaseEntity] to simplify implementing
  * some another controllers by generifying methods.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  */

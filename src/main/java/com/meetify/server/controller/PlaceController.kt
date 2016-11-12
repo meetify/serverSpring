@@ -16,11 +16,10 @@ import javax.persistence.EntityManager
 /**
  * This class represents controller over places. It holds mapping '/place'.
  * Also, it is layer between client and Google Places Web API.
- * @author  Dmitry Baynak
  * @version 0.0.1
  * @since   0.0.1
  * @property    userRepository  users repository.
- * @property    placeRepository places repository.
+ * @property    repo            places repository.
  * @param       entityManager   entity manager.
  * @constructor             Autowired by Spring.
  */
@@ -28,7 +27,7 @@ import javax.persistence.EntityManager
 @RestController @RequestMapping("/place")
 class PlaceController @Autowired constructor(
         private val userRepository: UserRepository,
-        private val placeRepository: PlaceRepository,
+        placeRepository: PlaceRepository,
         entityManager: EntityManager) : BaseController<Place>(placeRepository, entityManager) {
 
     /**
@@ -38,13 +37,48 @@ class PlaceController @Autowired constructor(
      * @return                  google place, which can be easily serialized with Jackson JSON library.
      */
     @ResponseBody @RequestMapping("/nearby", method = arrayOf(RequestMethod.GET))
-    fun nearby(@RequestParam(name = "location") locationJson: String): GooglePlace {
-        val location = mapper.readValue(locationJson, Location::class.java)
-        return WebUtils.request(location, "100").apply {
-            results = results.filter { it.photos.size > 0 }
-            results.forEach { it -> it.photos.forEach { it.photoReference = WebUtils.replaceRefs(it.photoReference) } }
-        }
+    fun nearby(@RequestParam(name = "location") locationJson: String): GooglePlace = WebUtils
+            .request(mapper.readValue(locationJson, Location::class.java), "100").apply {
+        results = results.filter { it.photos.size > 0 }
+        results.forEach { it -> it.photos.forEach { it.photoReference = WebUtils.replaceRefs(it.photoReference) } }
     }
+
+    /**
+     * Method, that should be used create new users places with some generated id.
+     * If owner of this place is not present in database, IllegalArgumentException is thrown.
+     * If some ids in allowed are not associated with existing users, they are ignored.
+     * @param   t   place, which should be created.
+     * @return      place, that was created if case of success.
+     */
+    override fun put(@RequestBody t: Place,
+                     @RequestParam(name = "device") device: String): Place = this.post(t, "create", device)
+
+    /**
+     * Method, that should be used create new users places with some generated id.
+     * If owner of this place is not present in database, IllegalArgumentException is thrown.
+     * If some ids in allowed are not associated with existing users, they are ignored.
+     * @param   t   place, which should be created.
+     * @return      place, that was created if case of success.
+     */
+    override fun post(@RequestBody t: Place,
+                      @RequestParam(name = "create", defaultValue = "") create: String,
+                      @RequestParam(name = "device") device: String
+    ): Place = userRepository.findById(t.owner).orElseThrow { IllegalArgumentException("owner not found") }.let {
+        val place = super.post(t, "", device)
+        HashSet<User>().apply {
+            place.allowed.forEach {
+                userRepository.findById(it).ifPresent {
+                    it.allowed += place.id
+                    this += it
+                }
+            }
+            it.created += place.id
+            this += it
+        }
+        repo.save(place)
+    }
+}
+
 
 //    @ResponseBody @RequestMapping(method = arrayOf(RequestMethod.POST))
 //    fun post(@RequestBody place: Place): Place {
@@ -63,38 +97,3 @@ class PlaceController @Autowired constructor(
 //        }
 //        return place
 //    }
-    /**
-     * Method, that should be used create new users places with some generated id.
-     * If owner of this place is not present in database, IllegalArgumentException is thrown.
-     * If some ids in allowed are not associated with existing users, they are ignored.
-     * @param   t   place, which should be created.
-     * @return      place, that was created if case of success.
-     */
-    override fun put(@RequestBody t: Place): Place {
-        val place = super.put(t)
-        userRepository.findById(place.owner).orElseThrow { IllegalArgumentException("owner not found") }.let {
-            HashSet<User>().apply {
-                place.allowed.forEach {
-                    userRepository.findById(it).ifPresent {
-                        it.allowed += place.id
-                        this += it
-                    }
-                }
-                it.created += place.id
-                userRepository.save(this)
-            }
-            return place
-        }
-    }
-
-    /**
-     * Method, that should be used create new users places with some generated id.
-     * If owner of this place is not present in database, IllegalArgumentException is thrown.
-     * If some ids in allowed are not associated with existing users, they are ignored.
-     * @param   t   place, which should be created.
-     * @return      place, that was created if case of success.
-     */
-    override fun post(@RequestBody t: Place, @RequestParam(name = "create", defaultValue = "") create: String): Place {
-        return if (create.trim().isEmpty()) return repo.save(t) else put(t)
-    }
-}

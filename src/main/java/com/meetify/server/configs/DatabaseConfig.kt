@@ -15,7 +15,6 @@ import javax.sql.DataSource
 
 /**
  * Class that used by Spring to configure Hibernate and database using application.properties.
- * @author  Dmitry Baynak
  * @version 0.0.1
  * @since   0.0.1
  * @property    env                     property that allows to load some config lines.

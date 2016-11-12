@@ -9,7 +9,6 @@ import java.util.*
 /**
  * This singleton contains some useful methods to work with JSON.
  * @property mapper kotlin's mapper.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  */

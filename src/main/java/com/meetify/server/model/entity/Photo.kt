@@ -6,7 +6,6 @@ import javax.persistence.*
 
 /**
  * This class is photo, that contains information about photo's id, owner id and uri.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  * @property    id      Id
@@ -21,4 +20,6 @@ class Photo(
         @EmbeddedId override var id: Id = Id(),
         @AttributeOverride(name = "id", column = javax.persistence.Column(name = "owner_id"))
         @Embedded var owner: Id = Id(),
-        var uri: String = "") : BaseEntity(id), Serializable
+        var uri: String = "") : BaseEntity(id), Serializable {
+    override fun isAvailable(id: Id): Boolean = true
+}

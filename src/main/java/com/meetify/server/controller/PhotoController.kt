@@ -9,7 +9,6 @@ import javax.persistence.EntityManager
 
 /**
  * This class represents controller over photos. It holds mapping '/photo'.
- * @author  Dmitry Baynak
  * @version 0.0.1
  * @since   0.0.1
  * @property    photoRepository Photo repository.

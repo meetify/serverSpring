@@ -8,7 +8,6 @@ import javax.persistence.*
 
 /**
  * This class is photo, that contains information about photo's id, owner id and uri.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  * @property    id          Id
@@ -24,4 +23,6 @@ class User(@EmbeddedId override var id: Id = Id(0),
            @Embedded var location: Location = Location(),
            @ElementCollection var friends: Set<Id> = HashSet(),
            @ElementCollection var created: Set<Id> = HashSet(),
-           @ElementCollection var allowed: Set<Id> = HashSet()) : BaseEntity(id), Serializable
+           @ElementCollection var allowed: Set<Id> = HashSet()) : BaseEntity(id), Serializable {
+    override fun isAvailable(id: Id): Boolean = id == this.id
+}

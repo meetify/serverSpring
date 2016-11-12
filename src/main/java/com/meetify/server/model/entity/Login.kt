@@ -13,4 +13,6 @@ import javax.persistence.Table
 @Table(name = "logins")
 class Login(@EmbeddedId override var id: Id = Id(-1),
             var token: String = "",
-            var device: String = "") : BaseEntity(id), Serializable
+            var device: String = "") : BaseEntity(id), Serializable {
+    override fun isAvailable(id: Id): Boolean = id == this.id
+}

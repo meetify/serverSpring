@@ -5,7 +5,6 @@ import javax.persistence.Embeddable
 
 /**
  * This class is embedded location, that represents geographic coordinates of some object.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  * @property    lat  latitude

@@ -2,6 +2,7 @@ package com.meetify.server.controller
 
 import com.meetify.server.model.Id
 import com.meetify.server.model.entity.BaseEntity
+import com.meetify.server.model.entity.Login
 import com.meetify.server.repository.BaseRepository
 import com.meetify.server.utils.JsonUtils
 import org.springframework.web.bind.annotation.*
@@ -11,7 +12,6 @@ import javax.persistence.EntityManager
 /**
  * This class represents some base controller. It has pre-implemented methods get, post, put, delete.
  * They are implemented in that way so they can be used without modifications on some usual tasks.
- * @author  Dmitry Baynak
  * @version 0.0.1
  * @since   0.0.1
  * @property    repo    Some custom repository that represents connection with some database
@@ -29,7 +29,10 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @return          collection with Ts info.
      */
     @ResponseBody @GetMapping
-    open fun get(@RequestParam(name = "ids") idsJson: String): ArrayList<T> = getFromCollection(JsonUtils.getList(idsJson))
+    open fun get(@RequestParam(name = "ids") idsJson: String,
+                 @RequestParam(name = "device") device: String): ArrayList<T> {
+        return getFromCollection(JsonUtils.getList(idsJson), device)
+    }
 
     /**
      * Creates or updates T object. If object with the same id was found, it updates info about selected place.
@@ -42,8 +45,11 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @return    saved object
      */
     @ResponseBody @PostMapping
-    open fun post(@RequestBody t: T, @RequestParam(name = "create", defaultValue = "") create: String): T {
-        return repo.save(if (create.trim().isEmpty()) t else generate(t))
+    open fun post(@RequestBody t: T,
+                  @RequestParam(name = "create", defaultValue = "") create: String,
+                  @RequestParam(name = "device") device: String): T {
+        check(t, device)
+        return repo.save(if (create == "" || create.trim().isEmpty()) t else generate(t))
     }
 
     /**
@@ -52,14 +58,22 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @return    saved object
      */
     @ResponseBody @PutMapping
-    open fun put(@RequestBody t: T): T = repo.save(generate(t))
+    open fun put(@RequestBody t: T,
+                 @RequestParam(name = "device") device: String): T {
+        check(t, device)
+        return repo.save(generate(t))
+    }
 
     /**
      * Deletes given object.
      * @param   t json representation of T instance.
      */
     @ResponseBody @DeleteMapping
-    open fun delete(@RequestBody t: T) = repo.delete(t)
+    open fun delete(@RequestBody t: T,
+                    @RequestParam(name = "device") device: String) {
+        check(t, device)
+        repo.delete(t)
+    }
 
     /**
      * This function allows to map some [ids] to objects.
@@ -67,24 +81,27 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @param   ids Collection that contains some ids.
      * @return      Collection that contains the instances of defined objects.
      */
-    open fun getFromCollection(ids: Collection<Id>): ArrayList<T> = ArrayList<T>().apply { ids.forEach { repo.findById(it).ifPresent { add(it) } } }
+    internal open fun getFromCollection(ids: Collection<Id>, device: String): ArrayList<T> = ArrayList<T>().apply {
+        val login = getLogin(device)
+        ids.map { repo.findById(it).get() }
+                .filter { it != null && it.isAvailable(login.id) }
+                .forEach { add(it) }
+    }
 
-    /**
-     * Function that allows to find some maximum id in the table which the [t] belongs.
-     * String.
-     * String.
-     * @param   t   Instance of some class, in which should maximum id be found.
-     * @return      Id that has maximum id + 1.
-     */
-    open fun runMaxQuery(t: T): Id {
-        return Optional.ofNullable(manager
-                .createQuery("select max(t.id) from ${t.javaClass.name} as t")
-                .resultList[0]).orElse(Id(-1)) as Id
+    internal open fun getLogin(device: String): Login = LoginController.findByDevice(device).orElseThrow { SecurityException() }!!
+
+    internal open fun check(t: T, device: String) {
+        if (t.isAvailable(getLogin(device).id)) return
+        throw SecurityException()
     }
 
     /**
      * Function which puts on t.id maximum id in the table which the object belongs.
      * @return      modified T.
      */
-    open fun generate(t: T): T = t.apply { t.id = runMaxQuery(this).apply { id++ } }
+    internal open fun generate(t: T): T = t.apply {
+        t.id = (Optional.ofNullable(manager
+                .createQuery("select max(t.id) from ${this.javaClass.name} as t")
+                .resultList[0]).orElse(Id(0)) as Id).apply { id++ }
+    }
 }

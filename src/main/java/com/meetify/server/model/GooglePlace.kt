@@ -15,7 +15,6 @@ import java.util.*
  * @property status            contains metadata on the request.
  * @property htmlAttributions  contains a set of attributions about this listing which must be displayed to the user.
  * @property nextPageToken     contains a token which can be used to access some more places instead of default 20.
- * @author      Dmitry Baynak
  * @version     0.0.1
  * @since       0.0.1
  */
