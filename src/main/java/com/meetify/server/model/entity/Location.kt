@@ -5,7 +5,7 @@ import javax.persistence.Embeddable
 
 /**
  * Цей клас є вбудовуваним, який відображає географічні координати певного об'єкту.
- * @author      Дмитро Байнак
+
  * @version     0.0.1
  * @since       0.0.1
  * @property    lat  широта.

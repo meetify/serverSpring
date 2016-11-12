@@ -15,7 +15,7 @@ import javax.persistence.EntityManager
 
 /**
  * Цей клас є контролером фотографій. Він також надає доступу до Google Places Web API разом із [GooglePlace].
- * @author  Дмитро Байнак
+ *
  * @version 0.0.1
  * @since   0.0.1
  * @property    userRepository  репозиторій користувачів.

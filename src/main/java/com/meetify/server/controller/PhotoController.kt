@@ -10,7 +10,7 @@ import javax.persistence.EntityManager
 
 /**
  * Цей клас є контролером фотографій.
- * @author  Дмитро Байнак
+ *
  * @version 0.0.1
  * @since   0.0.1
  * @property    photoRepository репозиторій фотографій.

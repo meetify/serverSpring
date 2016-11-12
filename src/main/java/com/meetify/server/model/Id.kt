@@ -6,7 +6,7 @@ import javax.persistence.Embeddable
 
 /**
  * Цей клас використовується як вбудовуваний ідентифікатор для всіх класів, які є JPA-сутностями.
- * @author      Дмитро Байнак
+
  * @version     0.0.1
  * @since       0.0.1
  * @property    id  ідентифікатор

@@ -15,7 +15,7 @@ import javax.sql.DataSource
 
 /**
  * Клас, який використовується самим фреймворком Spring для конфігурації Hibernate.
- * @author  Дмитро Байнак
+ *
  * @version 0.0.1
  * @since   0.0.1
  * @property    env                     поле, що дозволяє завантажувати конфігурацію, задану в application.properties.

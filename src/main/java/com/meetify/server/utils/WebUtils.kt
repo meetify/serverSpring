@@ -13,7 +13,7 @@ import java.util.*
 /**
  * об'єкт, який містить у собі деякі методи для спрощення роботи з запитами до інших ресурсів.
  * @property GOOGLE_API_KEY Google API ключ.
- * @author      Дмитро Байнак
+
  * @version     0.0.1
  * @since       0.0.1
  */

@@ -23,7 +23,7 @@ class LoginController @Autowired constructor(private val loginRepository: LoginR
             throw SecurityException("not correct token or owner")
         }
         val loginDB = loginRepository.findById(loginReq.id).orElseThrow { NotFoundException() }
-        return loginDB.device.equals(loginReq.device)
+        return loginDB.device == loginReq.device
     }
 
     @ResponseBody @PostMapping

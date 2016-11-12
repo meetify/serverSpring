@@ -4,7 +4,7 @@ import com.meetify.server.model.Id
 
 /**
  * Цей клас використовується для наслідування іншими класами, які мають [Id].
- * @author      Дмитро Байнак
+
  * @version     0.0.1
  * @property    id  ідентифікатор.
  * @since       0.0.1

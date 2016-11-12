@@ -11,7 +11,7 @@ import javax.persistence.EntityManager
 
 /**
  * Цей клас є контролером користувачів.
- * @author  Дмитро Байнак
+ *
  * @version 0.0.1
  * @since   0.0.1
  * @property   userRepository  users repository, which is provided by Spring & Hibernate.

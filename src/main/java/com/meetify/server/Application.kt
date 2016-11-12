@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 /**
  * Основний класс, який має аннотацію SpringBootApplication і відповідний статичний метод.
  * Використовується для запуску сервера.
- * @author  Дмитро Байнак
+ *
  * @version 0.0.1
  * @since   0.0.1
  */
