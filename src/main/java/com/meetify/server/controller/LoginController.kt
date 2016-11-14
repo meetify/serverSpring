@@ -2,6 +2,7 @@ package com.meetify.server.controller
 
 import com.meetify.server.model.Id
 import com.meetify.server.model.entity.Login
+import com.meetify.server.model.entity.User
 import com.meetify.server.repository.LoginRepository
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.JsonUtils.mapper
@@ -21,49 +22,38 @@ class LoginController(private val loginRepository: LoginRepository,
         repo = log
     }
 
-
     private fun checkToken(token: String): Boolean = !token.isEmpty()
 
     private class NotFoundException : RuntimeException()
 
     @ResponseBody @GetMapping
-    fun get(@RequestParam(name = "v") loginJson: String): Boolean {
+    fun get(@RequestParam(name = "v") loginJson: String): User {
         val loginReq = mapper.readValue(loginJson, Login::class.java)
-        if (!userRepository.exists(loginReq.id)) {
-            throw SecurityException("not correct token or owner")
-        }
+        val user = userRepository.findById(loginReq.id)
+        if (!user.isPresent) throw SecurityException("owner not found")
         val loginDB = loginRepository
                 .findById(loginReq.id)
                 .orElseThrow { NotFoundException() }
-        return loginDB.device == loginReq.device
+        return if (loginDB.device == loginReq.device) user.get() else User(Id(-1))
     }
 
     @ResponseBody @PostMapping
     fun post(@RequestBody key: Login): Login {
-        if (!checkToken(key.token) || !userRepository.exists(key.id)) {
-            throw SecurityException("not correct token or owner")
+        if (!checkToken(key.token)) {
+            throw SecurityException("not correct token ${mapper.writeValueAsString(key)}")
+        }
+        if (!userRepository.exists(key.id)) {
+            throw SecurityException("not correct owner ${mapper.writeValueAsString(key)}")
+        }
+        findByDevice(key.device).ifPresent {
+            repo?.delete(key.id)
         }
         key.token = ""
         return loginRepository.save(key)
     }
 
     companion object {
-
         var repo: LoginRepository? = null
-
-        fun findById(id: Id) = repo!!.findById(id)
-
         fun findByDevice(device: String) = repo!!.findByDevice(device)
-
-        fun check(id: Id, device: String): Boolean {
-            try {
-                return findById(id)
-                        .orElseThrow { Exception() }
-                        .let { it.device == device }
-            } catch (e: Exception) {
-                return false
-            }
-        }
-
     }
 }

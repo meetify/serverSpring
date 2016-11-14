@@ -16,7 +16,7 @@ import javax.persistence.EntityManager
  */
 @RestController @RequestMapping("/user")
 class UserController @Autowired constructor(
-        userRepository: UserRepository,
+        val userRepository: UserRepository,
         entityManager: EntityManager) : BaseController<User>(userRepository, entityManager) {
 
     /**
@@ -28,19 +28,21 @@ class UserController @Autowired constructor(
      */
     @ResponseBody @RequestMapping("/friends") @GetMapping
     fun friends(@RequestParam(name = "device") device: String): Collection<User> = ArrayList<User>().apply {
-        repo.findById(getLogin(device).id).get().let { it -> it.friends.forEach { add(repo.findById(it).get()) } }
+        userRepository.findById(getLogin(device).id).get().let { it.friends.forEach { repo.findById(it).ifPresent { add(it) } } }
     }
 
+    @ResponseBody @PostMapping
     override fun post(@RequestBody t: User,
                       @RequestParam(name = "create", defaultValue = "") create: String,
                       @RequestParam(name = "device") device: String): User {
-        check(t, device)
         repo.findById(t.id).ifPresent {
+            check(t, device)
             t.allowed = it.allowed
             t.created = it.created
         }
         return repo.save(t)
     }
 
+    @ResponseBody @PutMapping
     override fun put(t: User, device: String): User = throw UnsupportedOperationException("no put in /user")
 }

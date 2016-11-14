@@ -14,7 +14,7 @@ import javax.persistence.*
  * @property    description place description.
  * @property    id          Id.
  * @property    owner       owner id.
- * @property    photo       photo id.
+ * @property    photo       photo.
  * @property    location    where is geographically place located.
  * @property    allowed     collection with users, which can view info about this place.
  * @constructor defined place's properties.
@@ -27,7 +27,7 @@ class Place(var name: String = "",
             @AttributeOverride(name = "id", column = Column(name = "owner_id"))
             @Embedded val owner: Id = Id(-1),
             @AttributeOverride(name = "id", column = Column(name = "photo_id"))
-            @Embedded val photo: Id = Id(-1),
+            val photo: String = "",
             @EmbeddedId override var id: Id = Id(-1),
             @ElementCollection var allowed: Set<Id> = HashSet<Id>(),
             @Embedded var location: Location = Location()) : BaseEntity(id), Serializable {

@@ -81,27 +81,26 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @param   ids Collection that contains some ids.
      * @return      Collection that contains the instances of defined objects.
      */
-    internal open fun getFromCollection(ids: Collection<Id>, device: String): ArrayList<T> = ArrayList<T>().apply {
+    internal fun getFromCollection(ids: Collection<Id>, device: String): ArrayList<T> = ArrayList<T>().apply {
         val login = getLogin(device)
         ids.map { repo.findById(it).get() }
                 .filter { it != null && it.isAvailable(login.id) }
                 .forEach { add(it) }
     }
 
-    internal open fun getLogin(device: String): Login = LoginController.findByDevice(device).orElseThrow { SecurityException() }!!
+    internal fun getLogin(device: String): Login = LoginController
+            .findByDevice(device.trim()).orElseThrow { SecurityException() }
 
-    internal open fun check(t: T, device: String) {
+    internal fun check(t: T, device: String) {
         if (t.isAvailable(getLogin(device).id)) return
-        throw SecurityException()
+        throw SecurityException("check exception")
     }
 
     /**
      * Function which puts on t.id maximum id in the table which the object belongs.
      * @return      modified T.
      */
-    internal open fun generate(t: T): T = t.apply {
-        t.id = (Optional.ofNullable(manager
-                .createQuery("select max(t.id) from ${this.javaClass.name} as t")
-                .resultList[0]).orElse(Id(0)) as Id).apply { id++ }
+    internal fun generate(t: T): T = t.apply {
+        id = repo.findMaxId().orElse(Id(0)).apply { id++ }
     }
 }

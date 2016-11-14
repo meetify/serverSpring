@@ -44,7 +44,7 @@ object WebUtils {
      */
     fun request(location: Location, radius: String): GooglePlace {
         return JsonUtils.mapper.readValue(request(makeUrl(location, radius))
-                .let({ StringBuilder().apply { it.forEach { append(it) } }.toString(); }), GooglePlace::class.java)
+                .let { StringBuilder().apply { it.forEach { append(it) } }.toString(); }, GooglePlace::class.java)
     }
 
     private fun makeUrl(location: Location, radius: String): URL {

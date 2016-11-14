@@ -17,12 +17,16 @@ import javax.persistence.*
  * @property    friends     collection of users, who are user's friends.
  * @constructor defined place's properties.
  */
+@Suppress("unused")
 @Entity
 @Table(name = "users")
 class User(@EmbeddedId override var id: Id = Id(0),
            @Embedded var location: Location = Location(),
            @ElementCollection var friends: Set<Id> = HashSet(),
            @ElementCollection var created: Set<Id> = HashSet(),
-           @ElementCollection var allowed: Set<Id> = HashSet()) : BaseEntity(id), Serializable {
+           @ElementCollection var allowed: Set<Id> = HashSet(),
+           var name: String = "",
+           var photo: String = "",
+           var time: Long = 0) : BaseEntity(id), Serializable {
     override fun isAvailable(id: Id): Boolean = id == this.id
 }
