@@ -88,8 +88,10 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
                 .forEach { add(it) }
     }
 
-    internal fun getLogin(device: String): Login = LoginController
-            .findByDevice(device.trim()).orElseThrow { SecurityException() }
+    internal fun getLogin(device: String): Login {
+        println("$device with ${device.trim()}")
+        return LoginController.findByDevice(device.trim()).orElseThrow { SecurityException() }
+    }
 
     internal fun check(t: T, device: String) {
         if (t.isAvailable(getLogin(device).id)) return

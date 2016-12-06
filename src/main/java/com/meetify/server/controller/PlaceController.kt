@@ -61,7 +61,6 @@ class PlaceController @Autowired constructor(
      * @param   t   place, which should be created.
      * @return      place, that was created if case of success.
      */
-
     @ResponseBody @PostMapping
     override fun post(@RequestBody t: Place,
                       @RequestParam(name = "create", defaultValue = "") create: String,

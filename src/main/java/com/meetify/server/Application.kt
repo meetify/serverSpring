@@ -1,11 +1,5 @@
 package com.meetify.server
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.meetify.server.model.Id
-import com.meetify.server.model.entity.Location
-import com.meetify.server.model.entity.Login
-import com.meetify.server.model.entity.Place
-import com.meetify.server.model.entity.User
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
@@ -25,11 +19,11 @@ open class Application {
          */
         @JvmStatic fun main(args: Array<String>) {
             SpringApplication.run(Application::class.java, *args)
-            val o = jacksonObjectMapper()
-            val a = "${o.writeValueAsString(User())}\n${o.writeValueAsString(Place())}" +
-                    "\n${o.writeValueAsString(Id())}\n${o.writeValueAsString(Location())}" +
-                    "\n${o.writeValueAsString(Login())}"
-            println(a)
+//            val o = jacksonObjectMapper()
+//            val a = "${o.writeValueAsString(User())}\n${o.writeValueAsString(Place())}" +
+//                    "\n${o.writeValueAsString(Id())}\n${o.writeValueAsString(Location())}" +
+//                    "\n${o.writeValueAsString(Login())}"
+//            println(a)
 //            val s = ArrayList<User>().apply {
 //                add(User(Id(3)))
 //                add(User(Id(2)))
