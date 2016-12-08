@@ -27,5 +27,5 @@ abstract class BaseEntity(open var id: Id = Id()) {
      */
     override fun hashCode() = id.hashCode()
 
-    abstract fun isAvailable(id: Id): Boolean
+    abstract fun isAvailableFor(id: Id): Boolean
 }

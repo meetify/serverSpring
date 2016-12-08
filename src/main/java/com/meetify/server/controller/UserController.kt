@@ -1,6 +1,7 @@
 package com.meetify.server.controller
 
 import com.meetify.server.model.entity.Location
+import com.meetify.server.model.entity.Login
 import com.meetify.server.model.entity.User
 import com.meetify.server.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,8 +29,12 @@ class UserController @Autowired constructor(
      * @return          list with friends info.
      */
     @ResponseBody @RequestMapping("/friends") @GetMapping
-    fun friends(@RequestParam(name = "device") device: String): Collection<User> = ArrayList<User>().apply {
+    fun friends(@RequestParam(name = "device") device: String): HashSet<User> = HashSet<User>().apply {
         userRepository.findById(getLogin(device).id).get().let { it.friends.forEach { repo.findById(it).ifPresent { add(it) } } }
+    }
+
+    fun friends(login: Login): HashSet<User> = HashSet<User>().apply {
+        userRepository.findById(login.id).get().let { it.friends.forEach { repo.findById(it).ifPresent { add(it) } } }
     }
 
     @ResponseBody @PostMapping

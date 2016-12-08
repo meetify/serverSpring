@@ -31,5 +31,5 @@ class Place(var name: String = "",
             @EmbeddedId override var id: Id = Id(-1),
             @ElementCollection var allowed: Set<Id> = HashSet<Id>(),
             @Embedded var location: Location = Location()) : BaseEntity(id), Serializable {
-    override fun isAvailable(id: Id): Boolean = allowed.contains(id) || owner == id
+    override fun isAvailableFor(id: Id): Boolean = allowed.contains(id) || owner == id
 }

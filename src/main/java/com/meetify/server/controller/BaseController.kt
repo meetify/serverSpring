@@ -30,7 +30,7 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      */
     @ResponseBody @GetMapping
     open fun get(@RequestParam(name = "ids") idsJson: String,
-                 @RequestParam(name = "device") device: String): ArrayList<T> {
+                 @RequestParam(name = "device") device: String): HashSet<T> {
         return getFromCollection(JsonUtils.getList(idsJson), device)
     }
 
@@ -81,13 +81,22 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @param   ids Collection that contains some ids.
      * @return      Collection that contains the instances of defined objects.
      */
-    internal fun getFromCollection(ids: Collection<Id>, device: String): ArrayList<T> = ArrayList<T>().apply {
+    internal fun getFromCollection(ids: Collection<Id>, device: String): HashSet<T> = HashSet<T>().apply {
         val login = getLogin(device)
         println("ids in are $ids")
         ids.map { repo.findById(it) }
                 .filter { it.isPresent }
                 .map { it.get() }
-                .filter { it != null && it.isAvailable(login.id) }
+                .filter { it != null && it.isAvailableFor(login.id) }
+                .forEach { add(it) }
+    }
+
+    internal fun getFromCollection(ids: Collection<Id>, login: Login): HashSet<T> = HashSet<T>().apply {
+        println("ids in are $ids")
+        ids.map { repo.findById(it) }
+                .filter { it.isPresent }
+                .map { it.get() }
+                .filter { it != null && it.isAvailableFor(login.id) }
                 .forEach { add(it) }
     }
 
@@ -97,7 +106,7 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
     }
 
     internal fun check(t: T, device: String) {
-        if (t.isAvailable(getLogin(device).id)) return
+        if (t.isAvailableFor(getLogin(device).id)) return
         throw SecurityException("check exception")
     }
 

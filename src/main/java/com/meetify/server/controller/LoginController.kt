@@ -3,6 +3,7 @@ package com.meetify.server.controller
 import com.meetify.server.model.Id
 import com.meetify.server.model.entity.Login
 import com.meetify.server.model.entity.User
+import com.meetify.server.model.entity.UserExtended
 import com.meetify.server.repository.LoginRepository
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.JsonUtils.mapper
@@ -14,17 +15,21 @@ import org.springframework.web.bind.annotation.*
  */
 @Suppress("UNUSED_PARAMETER")
 @RestController @RequestMapping("/login")
-class LoginController(private val loginRepository: LoginRepository,
-                      private val userRepository: UserRepository,
-                      ignored: String) {
-    @Autowired constructor(log: LoginRepository,
-                           usr: UserRepository) : this(log, usr, "") {
-        repo = log
+class LoginController private constructor(private val loginRepository: LoginRepository,
+                                          private val userRepository: UserRepository,
+                                          private val placeController: PlaceController,
+                                          private val userController: UserController,
+                                          ignored: String) {
+
+    @Autowired constructor(loginRepository: LoginRepository,
+                           userRepository: UserRepository,
+                           placeController: PlaceController,
+                           userController: UserController)
+    : this(loginRepository, userRepository, placeController, userController, "") {
+        repo = loginRepository
     }
 
     private fun checkToken(token: String): Boolean = !token.isEmpty()
-
-    private class NotFoundException : RuntimeException()
 
     @ResponseBody @GetMapping
     fun get(@RequestParam(name = "v") loginJson: String): User {
@@ -47,6 +52,35 @@ class LoginController(private val loginRepository: LoginRepository,
         }
         key.token = ""
         return loginRepository.save(key)
+    }
+
+    data class LoginUser(var user: User = User(), var login: Login = Login())
+
+    @ResponseBody @PostMapping @RequestMapping("/auto")
+    fun login(@RequestBody json: LoginUser): UserExtended {
+        println(json)
+        val user = json.user
+        val login = json.login
+
+        val loginOptional = loginRepository.findByDevice(login.device)
+        val userOptional = userRepository.findById(user.id)
+
+        if (userOptional.isPresent) {
+            if (loginOptional.isPresent && loginOptional.get().id != userOptional.get().id) {
+                loginRepository.delete(loginOptional.get())
+            }
+            val userDB = userOptional.get()
+            user.allowed = userDB.allowed
+            user.created = userDB.created
+        } else if (loginOptional.isPresent) {
+            loginRepository.delete(loginOptional.get())
+        }
+        loginRepository.save(login)
+        userRepository.save(user)
+        return UserExtended(
+                userController.friends(login),
+                placeController.getFromCollection(user.created, login),
+                placeController.getFromCollection(user.allowed, login))
     }
 
     companion object {

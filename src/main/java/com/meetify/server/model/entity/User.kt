@@ -27,6 +27,8 @@ class User(@EmbeddedId override var id: Id = Id(0),
            @ElementCollection var allowed: Set<Id> = HashSet(),
            var name: String = "",
            var photo: String = "",
-           var time: Long = 0) : BaseEntity(id), Serializable {
-    override fun isAvailable(id: Id): Boolean = id == this.id
+           var time: Long = 0,
+           var vkAlbum: Long = 0
+) : BaseEntity(id), Serializable {
+    override fun isAvailableFor(id: Id): Boolean = id == this.id
 }
