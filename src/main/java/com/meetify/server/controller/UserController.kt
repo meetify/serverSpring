@@ -1,5 +1,6 @@
 package com.meetify.server.controller
 
+import com.meetify.server.model.entity.Location
 import com.meetify.server.model.entity.User
 import com.meetify.server.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +21,7 @@ class UserController @Autowired constructor(
         entityManager: EntityManager) : BaseController<User>(userRepository, entityManager) {
 
     /**
-     * todo that's fails
+     * todo that's fails; 6.12.2016 - ??
      * Returns a list with information about friends of selected user.
      * If some friends are unknown, they are ignored.
      * @param   device  json representation of id of user, which friends should be returned.
@@ -41,6 +42,18 @@ class UserController @Autowired constructor(
             t.created = it.created
         }
         return repo.save(t)
+    }
+
+    @PostMapping @RequestMapping("/update")
+    fun update(@RequestBody updLocation: Location,
+               @RequestParam(name = "device") device: String) {
+        println("update method with $device")
+        repo.findById(LoginController.findByDevice(device).orElseThrow { SecurityException() }.id).orElseThrow { SecurityException() }.apply {
+            println("${id.id} was found, saving it!!")
+            location = updLocation
+            time = System.currentTimeMillis()
+            repo.save(this)
+        }
     }
 
     @ResponseBody @PutMapping

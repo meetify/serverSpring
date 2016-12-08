@@ -33,6 +33,7 @@ class PlaceController @Autowired constructor(
     /**
      * Returns Google Place, that downloaded from it's server.
      * It has pre-converted photo links and it doesn't contain any places without photos.
+     * 2w3e4r5t1q
      * @param   locationJson    json representation of location near of which places are looking.
      * @return                  google place, which can be easily serialized with Jackson JSON library.
      */

@@ -83,7 +83,10 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      */
     internal fun getFromCollection(ids: Collection<Id>, device: String): ArrayList<T> = ArrayList<T>().apply {
         val login = getLogin(device)
-        ids.map { repo.findById(it).get() }
+        println("ids in are $ids")
+        ids.map { repo.findById(it) }
+                .filter { it.isPresent }
+                .map { it.get() }
                 .filter { it != null && it.isAvailable(login.id) }
                 .forEach { add(it) }
     }

@@ -30,10 +30,7 @@ class LoginController(private val loginRepository: LoginRepository,
     fun get(@RequestParam(name = "v") loginJson: String): User {
         val loginReq = mapper.readValue(loginJson, Login::class.java)
         val user = userRepository.findById(loginReq.id)
-        if (!user.isPresent) throw SecurityException("owner not found")
-        val loginDB = loginRepository
-                .findById(loginReq.id)
-                .orElseThrow { NotFoundException() }
+        val loginDB = loginRepository.findById(loginReq.id).orElse(Login())
         return if (loginDB.device == loginReq.device) user.get() else User(Id(-1))
     }
 
