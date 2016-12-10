@@ -1,7 +1,7 @@
 package com.meetify.server.controller
 
-import com.meetify.server.model.entity.Location
 import com.meetify.server.model.entity.Login
+import com.meetify.server.model.entity.MeetifyLocation
 import com.meetify.server.model.entity.User
 import com.meetify.server.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +13,7 @@ import javax.persistence.EntityManager
  * This class represents controller over users. It holds mapping '/user'.
  * @version 0.0.1
  * @since   0.0.1
- * @property   userRepository  users repository, which is provided by Spring & Hibernate.
+ * @property   userRepository  users repo, which is provided by Spring & Hibernate.
  * @constructor             Autowired by Spring.
  */
 @RestController @RequestMapping("/user")
@@ -50,11 +50,11 @@ class UserController @Autowired constructor(
     }
 
     @PostMapping @RequestMapping("/update")
-    fun update(@RequestBody updLocation: Location,
+    fun update(@RequestBody updLocation: MeetifyLocation,
                @RequestParam(name = "device") device: String) {
         println("update method with $device")
         repo.findById(LoginController.findByDevice(device).orElseThrow { SecurityException() }.id).orElseThrow { SecurityException() }.apply {
-            println("${id.id} was found, saving it!!")
+            println("$id was found, saving it!!")
             location = updLocation
             time = System.currentTimeMillis()
             repo.save(this)

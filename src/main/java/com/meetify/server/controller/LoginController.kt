@@ -1,9 +1,8 @@
 package com.meetify.server.controller
 
-import com.meetify.server.model.Id
+import com.meetify.server.model.UserExtended
 import com.meetify.server.model.entity.Login
 import com.meetify.server.model.entity.User
-import com.meetify.server.model.entity.UserExtended
 import com.meetify.server.repository.LoginRepository
 import com.meetify.server.repository.UserRepository
 import com.meetify.server.utils.JsonUtils.mapper
@@ -31,14 +30,16 @@ class LoginController private constructor(private val loginRepository: LoginRepo
 
     private fun checkToken(token: String): Boolean = !token.isEmpty()
 
+    @Deprecated("LoginController.login replaced this quite well.")
     @ResponseBody @GetMapping
     fun get(@RequestParam(name = "v") loginJson: String): User {
         val loginReq = mapper.readValue(loginJson, Login::class.java)
         val user = userRepository.findById(loginReq.id)
-        val loginDB = loginRepository.findById(loginReq.id).orElse(Login())
-        return if (loginDB.device == loginReq.device) user.get() else User(Id(-1))
+        val loginDB = loginRepository.findByDevice(loginReq.device).orElse(Login())
+        return if (loginDB.id == loginReq.id) user.get() else User()
     }
 
+    @Deprecated("LoginController.login replaced this quite well.")
     @ResponseBody @PostMapping
     fun post(@RequestBody key: Login): Login {
         if (!checkToken(key.token)) {
@@ -48,7 +49,7 @@ class LoginController private constructor(private val loginRepository: LoginRepo
             throw SecurityException("not correct owner ${mapper.writeValueAsString(key)}")
         }
         findByDevice(key.device).ifPresent {
-            repo?.delete(key.id)
+            repo?.delete(key.device)
         }
         key.token = ""
         return loginRepository.save(key)
@@ -58,7 +59,7 @@ class LoginController private constructor(private val loginRepository: LoginRepo
 
     @ResponseBody @PostMapping @RequestMapping("/auto")
     fun login(@RequestBody json: LoginUser): UserExtended {
-        println(json)
+        println(mapper.writeValueAsString(json))
         val user = json.user
         val login = json.login
 

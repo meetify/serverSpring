@@ -1,5 +1,7 @@
-package com.meetify.server.model.entity
+package com.meetify.server.model
 
+import com.meetify.server.model.entity.Place
+import com.meetify.server.model.entity.User
 import java.util.*
 
 /**

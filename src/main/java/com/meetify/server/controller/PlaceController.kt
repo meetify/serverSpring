@@ -1,7 +1,7 @@
 package com.meetify.server.controller
 
 import com.meetify.server.model.GooglePlace
-import com.meetify.server.model.entity.Location
+import com.meetify.server.model.entity.MeetifyLocation
 import com.meetify.server.model.entity.Place
 import com.meetify.server.model.entity.User
 import com.meetify.server.repository.PlaceRepository
@@ -18,12 +18,11 @@ import javax.persistence.EntityManager
  * Also, it is layer between client and Google Places Web API.
  * @version 0.0.1
  * @since   0.0.1
- * @property    userRepository  users repository.
- * @property    repo            places repository.
+ * @property    userRepository  users repo.
+ * @property    repo            places repo.
  * @param       entityManager   entity manager.
  * @constructor             Autowired by Spring.
  */
-
 @RestController @RequestMapping("/place")
 class PlaceController @Autowired constructor(
         private val userRepository: UserRepository,
@@ -39,7 +38,7 @@ class PlaceController @Autowired constructor(
      */
     @ResponseBody @GetMapping @RequestMapping("/nearby")
     fun nearby(@RequestParam(name = "location") locationJson: String): GooglePlace = WebUtils
-            .request(mapper.readValue(locationJson, Location::class.java), "100").apply {
+            .request(mapper.readValue(locationJson, MeetifyLocation::class.java), "100").apply {
         results = results.filter { it.photos.size > 0 }.filter { it.types.contains("point_of_interest") }
         results.forEach { it.photos.forEach { it.photoReference = WebUtils.replaceRefs(it.photoReference) } }
     }

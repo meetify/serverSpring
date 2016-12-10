@@ -1,14 +1,12 @@
 package com.meetify.server.model.entity
 
-import com.meetify.server.model.Id
-
 /**
  * This class is used to be extended by classes, which has Id and can be accessed by this Id.
  * @version     0.0.1
  * @property    id  id
  * @since       0.0.1
  */
-abstract class BaseEntity(open var id: Id = Id()) {
+abstract class BaseEntity(open var id: Long = 0) {
 
     /**
      * Equals method, that is overridden from Kotlin's Any.
@@ -27,5 +25,5 @@ abstract class BaseEntity(open var id: Id = Id()) {
      */
     override fun hashCode() = id.hashCode()
 
-    abstract fun isAvailableFor(id: Id): Boolean
+    abstract fun isAvailableFor(id: Long): Boolean
 }

@@ -1,6 +1,5 @@
 package com.meetify.server.model.entity
 
-import com.meetify.server.model.Id
 import java.io.Serializable
 import java.util.*
 import javax.persistence.*
@@ -20,15 +19,15 @@ import javax.persistence.*
 @Suppress("unused")
 @Entity
 @Table(name = "users")
-class User(@EmbeddedId override var id: Id = Id(0),
-           @Embedded var location: Location = Location(),
-           @ElementCollection var friends: Set<Id> = HashSet(),
-           @ElementCollection var created: Set<Id> = HashSet(),
-           @ElementCollection var allowed: Set<Id> = HashSet(),
+class User(@Id override var id: Long = -1,
+           @Embedded var location: MeetifyLocation = MeetifyLocation(),
+           @ElementCollection var friends: Set<Long> = HashSet(),
+           @ElementCollection var created: Set<Long> = HashSet(),
+           @ElementCollection var allowed: Set<Long> = HashSet(),
            var name: String = "",
            var photo: String = "",
            var time: Long = 0,
            var vkAlbum: Long = 0
 ) : BaseEntity(id), Serializable {
-    override fun isAvailableFor(id: Id): Boolean = id == this.id
+    override fun isAvailableFor(id: Long): Boolean = id == this.id
 }

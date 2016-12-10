@@ -1,10 +1,8 @@
 package com.meetify.server.model.entity
 
-import com.meetify.server.model.Id
 import java.io.Serializable
 import java.util.*
 import javax.persistence.*
-
 
 /**
  * This class is place, that contains information place.
@@ -24,12 +22,10 @@ import javax.persistence.*
 @Entity
 class Place(var name: String = "",
             var description: String = "",
-            @AttributeOverride(name = "id", column = Column(name = "owner_id"))
-            @Embedded val owner: Id = Id(-1),
-            @AttributeOverride(name = "id", column = Column(name = "photo_id"))
+            val owner: Long = -1,
             val photo: String = "",
-            @EmbeddedId override var id: Id = Id(-1),
-            @ElementCollection var allowed: Set<Id> = HashSet<Id>(),
-            @Embedded var location: Location = Location()) : BaseEntity(id), Serializable {
-    override fun isAvailableFor(id: Id): Boolean = allowed.contains(id) || owner == id
+            @Embedded var location: MeetifyLocation = MeetifyLocation(),
+            @ElementCollection var allowed: Set<Long> = HashSet<Long>(),
+            @Id override var id: Long = -1) : BaseEntity(id), Serializable {
+    override fun isAvailableFor(id: Long): Boolean = allowed.contains(id) || owner == id
 }

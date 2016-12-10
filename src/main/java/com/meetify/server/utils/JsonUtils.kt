@@ -2,9 +2,7 @@ package com.meetify.server.utils
 
 //import com.fasterxml.jackson.module.kotlin.ExtensionsKt.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.meetify.server.model.Id
 import com.meetify.server.utils.JsonUtils.mapper
-import java.util.*
 
 /**
  * This singleton contains some useful methods to work with JSON.
@@ -21,13 +19,6 @@ object JsonUtils {
      * @param json json representation of Collection<Id>
      * @return parsed collection with ids.
      */
-    fun getList(json: String): ArrayList<Id> {
-        return ArrayList<Id>().apply {
-            mapper.readValue(json, List::class.java).forEach {
-                //failing of the next cast can be caused by incorrect data, so it can be thrown to user
-                @Suppress("UNCHECKED_CAST")
-                add(Id((it as LinkedHashMap<String, Long>)["id"]!!))
-            }
-        }
-    }
+    fun getList(json: String) = mapper.readValue(json, arrayOf(1.toLong()).javaClass).toList()
+
 }

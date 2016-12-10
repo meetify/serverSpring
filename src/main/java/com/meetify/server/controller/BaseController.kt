@@ -1,6 +1,5 @@
 package com.meetify.server.controller
 
-import com.meetify.server.model.Id
 import com.meetify.server.model.entity.BaseEntity
 import com.meetify.server.model.entity.Login
 import com.meetify.server.repository.BaseRepository
@@ -14,7 +13,7 @@ import javax.persistence.EntityManager
  * They are implemented in that way so they can be used without modifications on some usual tasks.
  * @version 0.0.1
  * @since   0.0.1
- * @property    repo    Some custom repository that represents connection with some database
+ * @property    repo    Some custom repo that represents connection with some database
  * @property    manager Entity manager used for queries.
  * @constructor         Autowired by Spring.
  */
@@ -81,7 +80,7 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @param   ids Collection that contains some ids.
      * @return      Collection that contains the instances of defined objects.
      */
-    internal fun getFromCollection(ids: Collection<Id>, device: String): HashSet<T> = HashSet<T>().apply {
+    internal fun getFromCollection(ids: Collection<Long>, device: String): HashSet<T> = HashSet<T>().apply {
         val login = getLogin(device)
         println("ids in are $ids")
         ids.map { repo.findById(it) }
@@ -91,7 +90,7 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
                 .forEach { add(it) }
     }
 
-    internal fun getFromCollection(ids: Collection<Id>, login: Login): HashSet<T> = HashSet<T>().apply {
+    internal fun getFromCollection(ids: Collection<Long>, login: Login): HashSet<T> = HashSet<T>().apply {
         println("ids in are $ids")
         ids.map { repo.findById(it) }
                 .filter { it.isPresent }
@@ -106,8 +105,8 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
     }
 
     internal fun check(t: T, device: String) {
-        if (t.isAvailableFor(getLogin(device).id)) return
-        throw SecurityException("check exception")
+        if (!t.isAvailableFor(getLogin(device).id))
+            throw SecurityException("check exception")
     }
 
     /**
@@ -115,6 +114,6 @@ abstract class BaseController<T : BaseEntity>(val repo: BaseRepository<T>,
      * @return      modified T.
      */
     internal fun generate(t: T): T = t.apply {
-        id = repo.findMaxId().orElse(Id(0)).apply { id++ }
+        id = repo.findMaxId().orElse(0).apply { inc() }
     }
 }

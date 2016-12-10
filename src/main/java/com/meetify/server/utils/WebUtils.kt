@@ -1,7 +1,7 @@
 package com.meetify.server.utils
 
 import com.meetify.server.model.GooglePlace
-import com.meetify.server.model.entity.Location
+import com.meetify.server.model.entity.MeetifyLocation
 import com.meetify.server.utils.WebUtils.GOOGLE_API_KEY
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -42,14 +42,14 @@ object WebUtils {
      * @param location location of place, near of which places should be found.
      * @return parsed google place.
      */
-    fun request(location: Location, radius: String): GooglePlace {
+    fun request(location: MeetifyLocation, radius: String): GooglePlace {
         return JsonUtils.mapper.readValue(request(makeUrl(location, radius))
                 .let { StringBuilder().apply { it.forEach { append(it) } }.toString(); }, GooglePlace::class.java)
     }
 
-    private fun makeUrl(location: Location, radius: String): URL {
+    private fun makeUrl(location: MeetifyLocation, radius: String): URL {
         return URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
-                "location=${location.lat},${location.lon}&radius=$radius&key=$GOOGLE_API_KEY")
+                "location=${location.latitude},${location.longitude}&radius=$radius&key=$GOOGLE_API_KEY")
     }
 
     /**
