@@ -6,7 +6,7 @@ import com.meetify.server.model.entity.BaseEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.NoRepositoryBean
-import java.util.*
+import java.io.Serializable
 
 /**
  * Interface, that marked as @NoRepositoryBean, because it is developed to be extended by another interfaces.
@@ -17,14 +17,14 @@ import java.util.*
  * @since       0.0.1
  */
 @NoRepositoryBean
-interface BaseRepository<T : BaseEntity> : JpaRepository<T, Long> {
+interface BaseRepository<T : BaseEntity, V : Serializable> : JpaRepository<T, V> {
     /**
      * This method allows finding object by param [id].
      * @param   id  id of object that should be found in database.
      * @return  optional that has information about found object.
      */
-    fun findById(id: Long): Optional<T>
+    fun findById(id: V): T?
 
     @Query("select max(t.id) from #{#entityName} as t")
-    fun findMaxId(): Optional<Long>
+    fun findMaxId(): V?
 }

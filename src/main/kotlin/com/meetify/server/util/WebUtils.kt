@@ -1,8 +1,8 @@
-package com.meetify.server.utils
+package com.meetify.server.util
 
 import com.meetify.server.model.GooglePlace
 import com.meetify.server.model.entity.MeetifyLocation
-import com.meetify.server.utils.WebUtils.GOOGLE_API_KEY
+import com.meetify.server.util.WebUtils.GOOGLE_API_KEY
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection

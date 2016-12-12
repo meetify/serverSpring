@@ -2,7 +2,7 @@ package com.meetify.server.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.meetify.server.utils.WebUtils
+import com.meetify.server.util.WebUtils
 import java.io.Serializable
 import java.util.*
 

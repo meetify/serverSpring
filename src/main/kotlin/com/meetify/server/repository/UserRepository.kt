@@ -8,4 +8,4 @@ import com.meetify.server.model.entity.User
  * @version     0.0.1
  * @since       0.0.1
  */
-interface UserRepository : BaseRepository<User>
+interface UserRepository : BaseRepository<User, Long>

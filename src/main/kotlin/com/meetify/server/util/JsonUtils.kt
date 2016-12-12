@@ -1,8 +1,8 @@
-package com.meetify.server.utils
+package com.meetify.server.util
 
 //import com.fasterxml.jackson.module.kotlin.ExtensionsKt.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.meetify.server.utils.JsonUtils.mapper
+import com.meetify.server.util.JsonUtils.mapper
 
 /**
  * This singleton contains some useful methods to work with JSON.

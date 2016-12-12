@@ -1,4 +1,4 @@
-package com.meetify.server.configs
+package com.meetify.server.config
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -21,7 +21,9 @@ import javax.sql.DataSource
  * @property    dataSource              property that allows to connect to database.
  * @property    entityManagerFactory    factory that used to create entityManager instances.
  */
-@Configuration @EnableTransactionManagement @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
+@Configuration
+@EnableTransactionManagement
+@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
 open class DatabaseConfig {
 
     @Autowired
