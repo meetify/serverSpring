@@ -5,7 +5,7 @@ import com.meetify.server.model.entity.Place
 import com.meetify.server.service.LoginService
 import com.meetify.server.service.PlaceService
 import com.meetify.server.service.UserService
-import com.meetify.server.util.JsonUtils.mapper
+import com.meetify.server.util.JsonUtils.json
 import com.meetify.server.util.WebUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -28,13 +28,15 @@ class PlaceController @Autowired constructor(
     /**
      * Returns Google Place, that downloaded from it's server.
      * It has pre-converted photo links and it doesn't contain any places without photos.
-     * @param   locationJson    json representation of location near of which places are looking.
+     * @param   location    json representation of location near of which places are looking.
      * @return                  google place, which can be easily serialized with Jackson JSON library.
      */
     @ResponseBody @GetMapping @RequestMapping("/nearby")
-    fun nearby(@RequestParam("location") locationJson: String) = WebUtils
-            .request(mapper.readValue(locationJson, MeetifyLocation::class.java), "100").apply {
-        results = results.filter { it.photos.isNotEmpty() }.filter { it.types.contains("point_of_interest") }
+    fun nearby(@RequestParam("location") location: String,
+               @RequestParam("types", defaultValue = "") types: String,
+               @RequestParam("name", defaultValue = "") name: String
+    ) = WebUtils.request(json(location, MeetifyLocation::class.java), "100", types, name).apply {
+        results = results.filter { it.photos.isNotEmpty() && it.types.contains("point_of_interest") }
         results.forEach { it.photos.forEach { it.photoReference = WebUtils.replaceRefs(it.photoReference) } }
     }
 }

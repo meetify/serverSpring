@@ -1,6 +1,5 @@
 package com.meetify.server.util
 
-//import com.fasterxml.jackson.module.kotlin.ExtensionsKt.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.meetify.server.util.JsonUtils.mapper
 
@@ -20,5 +19,9 @@ object JsonUtils {
      * @return parsed collection with ids.
      */
     fun getList(json: String) = mapper.readValue(json, arrayOf(1.toLong()).javaClass).toList()
+
+    fun <V> json(json: String, clazz: Class<V>) = mapper.readValue(json, clazz)!!
+
+    fun json(json: Any) = mapper.writeValueAsString(json)!!
 
 }

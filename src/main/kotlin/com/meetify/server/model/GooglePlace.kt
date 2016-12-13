@@ -7,7 +7,7 @@ import java.io.Serializable
 import java.util.*
 
 /**
- * Google place representation. It can be taken using [WebUtils.request]. All documentation about this class & inner
+ * Google place representation. It can be taken using [WebUtils.url]. All documentation about this class & inner
  * classes was taken from [Google documentation](https://developers.google.com/places/web-service/details)
  * and it's licensed under the [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
  * No changes were made, except of some in-page redirects.
