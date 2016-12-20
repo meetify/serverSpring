@@ -5,8 +5,12 @@ import com.meetify.server.model.entity.User
 import java.util.*
 
 /**
- * Created on 08.12.2016.
- * @author  Dmitry Baynak
+ *
+ * @since 0.3.0
+ * @property  allowed   collection of places, where user has access.
+ * @property  created   collection of places, which are created by this user.
+ * @property  friends   collection of users, who are user's friends.
+ * @constructor can be empty or can take all needed sets.
  */
 data class UserExtended(var friends: Set<User> = HashSet(),
                         var created: Set<Place> = HashSet(),

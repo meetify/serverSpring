@@ -1,66 +1,42 @@
 package com.meetify.server.controller
 
 import com.meetify.server.model.entity.BaseEntity
+import com.meetify.server.model.entity.Login
 import com.meetify.server.service.BaseService
 import com.meetify.server.service.LoginService
-import com.meetify.server.util.JsonUtils
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
 /**
  * This class represents some base controller. It has pre-implemented methods get, post, put, delete.
  * They are implemented in that way so they can be used without modifications on some usual tasks.
- * @version 0.0.1
- * @since   0.0.1
- * @property    service Some custom repo that represents connection with some database
- * @constructor         Autowired by Spring.
+ * @since  0.1.0
+ * @property service Layer between repository and controllers.
+ * @property loginService Service, that allows perform security control.
+ * @constructor     Autowired by Spring.
  */
-@Suppress("unused")
 abstract class AbstractController<T : BaseEntity>(
         open val service: BaseService<T, Long>,
-        val login: LoginService) : BaseController<T> {
-    /**
-     * Returns a list with information about Ts.
-     * Unknown ids in [ids] list are ignored.
-     * @param   ids json representation of collection of the ids of requested Ts.
-     * @return          collection with Ts info.
-     */
+        open val loginService: LoginService) : BaseController<T> {
+
     @ResponseBody @GetMapping
-    override fun get(@RequestParam("ids") ids: String, @RequestParam("device") device: String
-    ) = login(device).let {
-        HashSet<T>().apply {
-            service.get(JsonUtils.getList(ids)).forEach { item ->
-                if (item.isAvailableFor(it.id)) add(item)
-            }
-        }
-    }
+    override fun get(@RequestParam("ids") ids: HashSet<Long>, @RequestParam("device") device: String
+    ) = login(device).let { service.get(ids).filter { item -> item.isAvailableFor(it.id) } }
 
-    /**
-     * Creates or updates T object. If object with the same id was found, it updates info about selected place.
-     * Otherwise, it just saves new object. If param 'create' contains non-empty string,
-     * server trying to save object with generated id,
-     * but it isn't allowed when Controller doesn't override method [post]. For example,
-     * it there is no way to generate id for users, but it is quite easy for places.
-     * @param   t       json representation of T instance.
-     * @return    saved object
-     */
     @ResponseBody @PostMapping
-    override fun post(@RequestBody t: T, @RequestParam("device") device: String) = login(device).let { service.edit(t) }
+    override fun post(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.edit(item) }
 
-    /**
-     * Creates new Object with some generated Id.
-     * @param   t json representation of T instance.
-     * @return    saved object
-     */
     @ResponseBody @PutMapping
-    override fun put(@RequestBody t: T, @RequestParam("device") device: String) = login(device).let { service.add(t) }
+    override fun put(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.add(item) }
+
+    @ResponseBody @DeleteMapping
+    override fun delete(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.delete(item) }
 
     /**
-     * Deletes given object.
-     * @param   t json representation of T instance.
+     * Method, that allows to get login of user by it's device.
+     * If there no such login, SecurityException is thrown.
+     * @param  device UUID that allows to find information about user. More about this in [Login].
+     * @return login found by [device]
      */
-    @ResponseBody @DeleteMapping
-    override fun delete(@RequestBody t: T, @RequestParam("device") device: String) = login(device).let { service.delete(t) }
-
-    internal fun login(device: String) = login.get(device) ?: throw SecurityException("device exception")
+    internal fun login(device: String) = loginService.get(device) ?: throw SecurityException("device exception")
 }

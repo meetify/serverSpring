@@ -15,11 +15,10 @@ import javax.sql.DataSource
 
 /**
  * Class that used by Spring to configure Hibernate and database using application.properties.
- * @version 0.0.1
- * @since   0.0.1
- * @property    env                     property that allows to load some config lines.
- * @property    dataSource              property that allows to connect to database.
- * @property    entityManagerFactory    factory that used to create entityManager instances.
+ * @since  0.1.0
+ * @property  env           property that allows to load some config lines.
+ * @property  dataSource       property that allows to connect to database.
+ * @property  entityManagerFactory  factory that used to create entityManager instances.
  */
 @Configuration
 @EnableTransactionManagement

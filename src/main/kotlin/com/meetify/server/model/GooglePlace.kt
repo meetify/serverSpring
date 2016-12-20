@@ -2,21 +2,21 @@ package com.meetify.server.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.meetify.server.util.WebUtils
+import com.meetify.server.service.PlaceService
 import java.io.Serializable
 import java.util.*
 
 /**
- * Google place representation. It can be taken using [WebUtils.url]. All documentation about this class & inner
- * classes was taken from [Google documentation](https://developers.google.com/places/web-service/details)
+ * Google place representation. It can be taken using [PlaceService.nearby].
+ * All documentation about this class & inner classes was taken from
+ * [Google documentation](https://developers.google.com/places/web-service/details)
  * and it's licensed under the [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
  * No changes were made, except of some in-page redirects.
- * @property results           contains the detailed information about the place requested.
- * @property status            contains metadata on the request.
- * @property htmlAttributions  contains a set of attributions about this listing which must be displayed to the user.
- * @property nextPageToken     contains a token which can be used to access some more places instead of default 20.
- * @version     0.0.1
- * @since       0.0.1
+ * @property results      contains the detailed information about the place requested.
+ * @property status      contains metadata on the request.
+ * @property htmlAttributions contains a set of attributions about this listing which must be displayed to the user.
+ * @property nextPageToken   contains a token which can be used to access some more places instead of default 20.
+ * @since    0.1.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class GooglePlace(
@@ -26,9 +26,9 @@ data class GooglePlace(
         @JsonProperty("next_page_token") var nextPageToken: String = "") : Serializable {
 
     /**
-     * @property types      is an array indicating the type of the address component.
-     * @property longName   is the full text description or name of the address component.
-     * @property shortName  is an abbreviated textual name for the address component, if available.
+     * @property types   is an array indicating the type of the address component.
+     * @property longName  is the full text description or name of the address component.
+     * @property shortName is an abbreviated textual name for the address component, if available.
      */
     data class AddressComponent(
             @JsonProperty("long_name") var longName: String = "",
@@ -37,14 +37,14 @@ data class GooglePlace(
 
     /**
      * @property placeId the most likely reason for a place to have an alternative place ID is if your application adds a place and receives an application-scoped place ID, then later receives a Google-scoped place ID after passing the moderation process.
-     * @property scope   the scope of an alternative place ID will always be APP, indicating that the alternative place ID is recognised by your application only.
+     * @property scope  the scope of an alternative place ID will always be APP, indicating that the alternative place ID is recognised by your application only.
      */
     data class AlternativeId(
             @JsonProperty("place_id") var placeId: String = "",
             var scope: String = "") : Serializable
 
     /**
-     * @property type   the name of the aspect that is being rated. The following types are supported: appeal, atmosphere, decor, facilities, food, overall, quality and service.
+     * @property type  the name of the aspect that is being rated. The following types are supported: appeal, atmosphere, decor, facilities, food, overall, quality and service.
      * @property rating the user's rating for this particular aspect, from 0 to 3.
      */
     data class Aspect(
@@ -52,8 +52,8 @@ data class GooglePlace(
             var type: String = "") : Serializable
 
     /**
-     * @property day    a number from 0–6, corresponding to the days of the week, starting on Sunday. For example, 2 means Tuesday.
-     * @property time   may contain a time of day in 24-hour HHMM format. Values are in the range 0000–2359. The time will be reported in the place’s time zone.
+     * @property day  a number from 0–6, corresponding to the days of the week, starting on Sunday. For example, 2 means Tuesday.
+     * @property time  may contain a time of day in 24-hour HHMM format. Values are in the range 0000–2359. The time will be reported in the place’s time zone.
      */
     data class DayTime(
             var day: Int = 0,

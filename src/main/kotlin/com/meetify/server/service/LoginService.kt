@@ -1,5 +1,6 @@
 package com.meetify.server.service
 
+import com.meetify.server.model.UserExtended
 import com.meetify.server.model.entity.Login
 import com.meetify.server.model.entity.User
 
@@ -8,5 +9,5 @@ import com.meetify.server.model.entity.User
  */
 
 interface LoginService : BaseService<Login, String> {
-    fun login(login: Login, user: User)
+    fun login(login: Login, user: User): UserExtended
 }

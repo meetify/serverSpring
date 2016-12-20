@@ -13,15 +13,15 @@ abstract class AbstractService<T : BaseEntity, in V : Serializable>(private val 
     : BaseService<T, V> {
     override fun add(items: Collection<T>) = items.forEach { add(it) }
 
-    override fun edit(items: Collection<T>) = items.forEach { edit(it) }
-
     override fun get(ids: Collection<V>): HashSet<T> = HashSet<T>().apply {
         ids.forEach { get(it)?.let { add(it) } }
     }
 
+    override fun edit(items: Collection<T>) = items.forEach { edit(it) }
+
+    override fun edit(item: T): T = repo.save(item)
+
     override fun delete(item: T) = repo.delete(item)
 
     override fun delete(id: V) = repo.delete(id)
-
-    override fun edit(item: T): T = repo.save(item)
 }

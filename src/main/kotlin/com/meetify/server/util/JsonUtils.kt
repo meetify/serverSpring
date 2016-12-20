@@ -6,22 +6,23 @@ import com.meetify.server.util.JsonUtils.mapper
 /**
  * This singleton contains some useful methods to work with JSON.
  * @property mapper kotlin's mapper.
- * @version     0.0.1
- * @since       0.0.1
+ * @since    0.1.0
  */
 object JsonUtils {
     val mapper = jacksonObjectMapper()
 
     /**
-     * Method that used to escape parsing LinkedHashMap in each method.
-     * If it fails on line with adding to ArrayList<Id> with casting, it's caused by incorrect data.
-     * @param json json representation of Collection<Id>
-     * @return parsed collection with ids.
+     * Alias to deserialize objects.
+     * @param json json representation of some class
+     * @param clazz Class<T>, which are trying are deserialize.
+     * @return instance of deserialized [json]
      */
-    fun getList(json: String) = mapper.readValue(json, arrayOf(1.toLong()).javaClass).toList()
-
     fun <V> json(json: String, clazz: Class<V>) = mapper.readValue(json, clazz)!!
 
+    /**
+     * Alias to serialize objects.
+     * @param json instance of any class
+     * @return serialized object
+     */
     fun json(json: Any) = mapper.writeValueAsString(json)!!
-
 }

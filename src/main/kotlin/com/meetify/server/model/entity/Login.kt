@@ -7,7 +7,12 @@ import javax.persistence.Id
 import javax.persistence.Transient
 
 /**
- * Created by Maks on 05.11.2016.
+ * Login class, which used to create some security of user's data.
+ * @since 0.1.0
+ * @property device unique UUID, which generated on device and used to identify in methods.
+ * @property id user's VK id.
+ * @property token user's VK token, which used only to check it when logging in
+ * @constructor defined login's properties.
  */
 @Entity
 class Login(@Id @Column(name = "id") var device: String = "",
