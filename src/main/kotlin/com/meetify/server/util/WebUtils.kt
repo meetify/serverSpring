@@ -1,5 +1,7 @@
 package com.meetify.server.util
 
+import com.meetify.server.util.WebUtils.client
+import com.meetify.server.util.WebUtils.request
 import okhttp3.OkHttpClient
 import okhttp3.Request
 

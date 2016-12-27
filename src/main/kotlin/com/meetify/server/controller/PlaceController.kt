@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*
 @RestController @RequestMapping("/place")
 class PlaceController @Autowired constructor(
         override val service: PlaceService,
-        loginService: LoginService
-) : AbstractController<Place>(service, loginService) {
+        loginService: LoginService)
+    : AbstractController<Place>(service, loginService) {
 
     /**
      * Method, that used to get places from Google Places Web API.
@@ -32,6 +32,6 @@ class PlaceController @Autowired constructor(
     @ResponseBody @GetMapping @RequestMapping("/nearby")
     fun nearby(@RequestParam("location") location: String,
                @RequestParam("types", defaultValue = "") types: String,
-               @RequestParam("name", defaultValue = "") name: String
-    ) = service.nearby(json(location, Location::class.java), "100", types, name)
+               @RequestParam("name", defaultValue = "") name: String)
+            = service.nearby(json(location, Location::class.java), "100", types, name)
 }

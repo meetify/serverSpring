@@ -1,7 +1,9 @@
 package com.meetify.server
 
+import com.meetify.server.util.jackson.jacksonObjectMapper
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean
 
 
 /**
@@ -16,26 +18,14 @@ open class Application {
          * @param  args  command-line options
          */
         @JvmStatic fun main(args: Array<String>) {
+            val o = jacksonObjectMapper()
+            Jackson2ObjectMapperFactoryBean().setObjectMapper(jacksonObjectMapper())
             SpringApplication.run(Application::class.java, *args)
-//      val o = jacksonObjectMapper()
-//      val a = "${o.writeValueAsString(User())}\n${o.writeValueAsString(Place())}" +
-//          "\n${o.writeValueAsString(Login())}"
-//      val a = "[1,2,3,4]"
-//      val b = o.readValue(a, HashSet<Long>().javaClass)
-//      println(b)
-//      val s = ArrayList<User>().apply {
-//        add(User(Id(3)))
-//        add(User(Id(2)))
-//        add(User(Id(6)))
-//      }
-//
-//      val s2 = o.writeValueAsString(s)
-//      println(s2)
-//      val s3 = (o.readValue(s2, Array<User>::class.java)).asList()
-//      s3.forEach {
-//        println("$it ${it.javaClass}")
-//      }
-
+            val a = hashSetOf(1, 2, 3)
+            val z = o.writeValueAsString(a)
+            println(z)
+            val aa = o.readValue(z, HashSet<Int>().javaClass)
+            println(aa)
         }
     }
 }

@@ -25,6 +25,21 @@ class PlaceServiceImpl
 
     override fun edit(item: Place): Place = place(get(item.id), super.edit(item))
 
+    override fun nearby(location: Location, radius: String, types: String, name: String): GooglePlace {
+        val url = StringBuilder(url).apply {
+            mapOf(Pair("location", location), Pair("radius", radius), Pair("types", types), Pair("name", name), Pair("key", key)
+            ).forEach {
+                append("${it.key}=${it.value}&")
+            }
+        }.toString()
+        return JsonUtils.json(WebUtils.request(url).body().string(), GooglePlace::class.java).apply {
+            results = results.filter { it.photos.isNotEmpty() && it.types.contains("point_of_interest") }.apply {
+                forEach { it.photos.forEach { it.photoReference = photo + it.photoReference } }
+            }
+        }
+    }
+
+
     private fun place(old: Place?, new: Place): Place {
         HashSet<User>().apply {
             old?.let {
@@ -47,27 +62,13 @@ class PlaceServiceImpl
             }
             userService.edit(this)
         }
+
         return new
     }
 
-
-    override fun nearby(location: Location, radius: String, types: String, name: String): GooglePlace {
-        val url = StringBuilder(url).apply {
-            mapOf(Pair("location", location), Pair("radius", radius), Pair("types", types), Pair("name", name), Pair("key", key)
-            ).forEach {
-                append("&${it.key}=${it.value}")
-            }
-        }.toString()
-        return JsonUtils.json(WebUtils.request(url).body().string(), GooglePlace::class.java).apply {
-            results = results.filter { it.photos.isNotEmpty() && it.types.contains("point_of_interest") }.apply {
-                forEach { it.photos.forEach { it.photoReference += photo } }
-            }
-        }
-    }
-
-    companion object {
+    private companion object {
         private val key = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
-        val url = "https://maps.googleapis.com/maps/api/place/nearbysearch"
-        val photo = "https://maps.googleapis.com/maps/api/place/photo?key=$key&maxwidth=600&photoreference="
+        private val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+        private val photo = "https://maps.googleapis.com/maps/api/place/photo?key=$key&maxwidth=600&photoreference="
     }
 }

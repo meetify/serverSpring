@@ -20,8 +20,8 @@ abstract class AbstractController<T : BaseEntity>(
         open val loginService: LoginService) : BaseController<T> {
 
     @ResponseBody @GetMapping
-    override fun get(@RequestParam("ids") ids: HashSet<Long>, @RequestParam("device") device: String
-    ) = login(device).let { service.get(ids).filter { item -> item.isAvailableFor(it.id) } }
+    override fun get(@RequestParam("ids") ids: HashSet<Long>, @RequestParam("device") device: String)
+            = login(device).let { service.get(ids).filter { item -> item.isAvailableFor(it.id) } }
 
     @ResponseBody @PostMapping
     override fun post(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.edit(item) }

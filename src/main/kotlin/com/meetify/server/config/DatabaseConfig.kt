@@ -1,10 +1,13 @@
 package com.meetify.server.config
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.meetify.server.util.jackson.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -12,6 +15,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.util.*
 import javax.sql.DataSource
+
 
 /**
  * Class that used by Spring to configure Hibernate and database using application.properties.
@@ -85,5 +89,14 @@ open class DatabaseConfig {
     @Bean
     open fun exceptionTranslation(): PersistenceExceptionTranslationPostProcessor {
         return PersistenceExceptionTranslationPostProcessor()
+    }
+
+    @Bean
+    open fun objectMapperBuilder(): Jackson2ObjectMapperBuilder {
+        println("Bean objectMapperBuilder #||# going to give own builder")
+        return Jackson2ObjectMapperBuilder().apply {
+            serializationInclusion(JsonInclude.Include.NON_NULL)
+            configure(jacksonObjectMapper())
+        }
     }
 }
