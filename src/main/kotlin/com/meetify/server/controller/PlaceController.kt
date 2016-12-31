@@ -1,10 +1,11 @@
 package com.meetify.server.controller
 
+import com.meetify.server.model.GooglePlace
 import com.meetify.server.model.Location
 import com.meetify.server.model.entity.Place
 import com.meetify.server.service.LoginService
 import com.meetify.server.service.PlaceService
-import com.meetify.server.util.JsonUtils.json
+import com.meetify.server.util.JsonUtils.readJson
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
@@ -23,15 +24,16 @@ class PlaceController @Autowired constructor(
     /**
      * Method, that used to get places from Google Places Web API.
      * It has pre-converted photo links and it doesn't contain any places without photos.
-     * This method refers to [PlaceService.nearby].
-     * @param  location json representation of location near of which places are looking.
-     * @param  types the parameters that specify search. Examples are [here](https://developers.google.com/places/supported_types).
-     * @param  name the parameter that allow searching by name.
-     * @return google place, which can be easily serialized with Jackson JSON library.
+     * Refers to [PlaceService.nearby].
+     * @param location json representation of location near of which places are looking.
+     * @param types params to specify search. Examples are [here](https://developers.google.com/places/supported_types).
+     * @param name the parameter that allow searching by name.
+     * @return google place
      */
     @ResponseBody @GetMapping @RequestMapping("/nearby")
     fun nearby(@RequestParam("location") location: String,
+               @RequestParam("name", defaultValue = "100") radius: String,
                @RequestParam("types", defaultValue = "") types: String,
-               @RequestParam("name", defaultValue = "") name: String)
-            = service.nearby(json(location, Location::class.java), "100", types, name)
+               @RequestParam("name", defaultValue = "") name: String): GooglePlace
+            = service.nearby(readJson(location, Location::class.java), radius, types, name)
 }

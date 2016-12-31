@@ -8,13 +8,14 @@ import java.util.*
 /**
  * Simple interface that represents REST API for controller.
  * These methods are implemented in [AbstractController].
+ * Linked with [BaseService]
  * @since  0.3.0
  */
 interface BaseController<T : BaseEntity> {
     /**
      * Returns a list with information about Ts.
      * Unknown or forbidden ids are ignored and not returned.
-     * This method refers to [BaseService.get].
+     * Refers to [BaseService.get].
      * @param  ids   json representation of collection of the ids of requested Ts.
      * @param  device UUID that allows to find information about user. More about this in [Login].
      * @return collection with Ts info.
@@ -25,7 +26,7 @@ interface BaseController<T : BaseEntity> {
      * Saves information about given [item].
      * If this item already was in database, service updates information about it in appropriate way.
      * Otherwise, it just saves new item into database with given id.
-     * This method refers to [BaseService.edit].
+     * Refers to [BaseService.edit].
      * @param  item  json representation of T instance.
      * @param  device UUID that allows to find information about user. More about this in [Login].
      * @return saved object
@@ -34,7 +35,7 @@ interface BaseController<T : BaseEntity> {
 
     /**
      * Add information about given [item] with generated id to database.
-     * This method refers to [BaseService.add].
+     * Refers to [BaseService.add].
      * @param  item  json representation of T instance.
      * @param  device UUID that allows to find information about user. More about this in [Login].
      * @return saved object
@@ -43,7 +44,7 @@ interface BaseController<T : BaseEntity> {
 
     /**
      * Deletes given object.
-     * This method refers to [BaseService.delete].
+     * Refers to [BaseService.delete].
      * @param  item json representation of T instance.
      * @param  device UUID that allows to find information about user. More about this in [Login].
      */

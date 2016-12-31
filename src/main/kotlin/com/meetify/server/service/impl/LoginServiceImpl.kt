@@ -8,21 +8,22 @@ import com.meetify.server.service.LoginService
 import com.meetify.server.service.PlaceService
 import com.meetify.server.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Service
 
 /**
- * Created by dmitry on 12/12/16.
+ * @suppress
  */
-@Service
+@Service @Scope("singleton")
 class LoginServiceImpl @Autowired constructor(
-        private val repo: LoginRepository,
+        override val repo: LoginRepository,
         private val userService: UserService,
         private val placeService: PlaceService)
     : AbstractService<Login, String>(repo), LoginService {
 
     private fun checkToken(token: String): Boolean = !token.isEmpty()
 
-    override fun login(login: Login, user: User) = UserExtended().apply {
+    override fun login(login: Login, user: User): UserExtended {
         if (!checkToken(login.token)) throw SecurityException(login.token)
         val loginDB = get(login.device)
         val userDB = userService.get(user.id)
@@ -40,9 +41,9 @@ class LoginServiceImpl @Autowired constructor(
         edit(login)
         userService.edit(user)
 
-        friends = userService.friends(login.id)
-        created = placeService.get(user.created)
-        allowed = placeService.get(user.allowed)
+        return UserExtended(userService.friends(login.id),
+                placeService.get(user.created),
+                placeService.get(user.allowed.keys))
     }
 
     override fun add(item: Login): Login = repo.save(item)

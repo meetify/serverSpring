@@ -2,7 +2,6 @@ package com.meetify.server.model.entity
 
 import com.meetify.server.model.Location
 import java.io.Serializable
-import java.util.*
 import javax.persistence.*
 
 /**
@@ -19,12 +18,12 @@ import javax.persistence.*
  */
 @Table(name = "places")
 @Entity
-class Place(var name: String = "",
-            var description: String = "",
+class Place(val name: String = "",
+            val description: String = "",
             val owner: Long = -1,
             val photo: String = "",
-            @Embedded var location: Location = Location(),
-            @ElementCollection var allowed: Set<Long> = HashSet<Long>(),
+            @Embedded val location: Location = Location(),
+            @ElementCollection val allowed: Map<Long, Boolean> = HashMap<Long, Boolean>(),
             @Id override var id: Long = -1) : BaseEntity(id), Serializable {
     override fun isAvailableFor(id: Long): Boolean = allowed.contains(id) || owner == id
 }

@@ -1,7 +1,7 @@
 package com.meetify.server.util
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.meetify.server.util.JsonUtils.mapper
-import com.meetify.server.util.jackson.jacksonObjectMapper
 
 /**
  * This singleton contains some useful methods to work with JSON.
@@ -17,7 +17,7 @@ object JsonUtils {
      * @param clazz Class<T>, which are trying are deserialize.
      * @return instance of deserialized [json]
      */
-    fun <V> json(json: String, clazz: Class<V>) = mapper.readValue(json, clazz)!!
+    fun <V> readJson(json: String, clazz: Class<V>) = mapper.readValue(json, clazz)!!
 
     /**
      * Alias to serialize objects.

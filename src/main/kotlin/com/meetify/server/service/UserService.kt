@@ -1,6 +1,7 @@
 package com.meetify.server.service
 
 import com.meetify.server.model.Location
+import com.meetify.server.model.entity.Place
 import com.meetify.server.model.entity.User
 import java.util.*
 
@@ -18,9 +19,15 @@ interface UserService : BaseService<User, Long> {
     fun friends(id: Long): HashSet<User>
 
     /**
-     * Method which used to update user's location.
+     * Updates user's location and last online time.
      * @param location new user's location
      * @param user user
      */
     fun update(user: User, location: Location): User
+
+    /**
+     * Returns list of allowed places, that weren't seen by given user.
+     * @param user user
+     */
+    fun unvisited(user: User): HashSet<Place>
 }

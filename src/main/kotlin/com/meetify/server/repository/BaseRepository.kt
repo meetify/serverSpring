@@ -1,10 +1,10 @@
 package com.meetify.server.repository
 
+import com.meetify.server.controller.AbstractController
 import com.meetify.server.model.entity.BaseEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.NoRepositoryBean
-import com.meetify.server.controller.AbstractController
 import java.io.Serializable
 
 /**

@@ -12,7 +12,7 @@ import javax.persistence.Embeddable
  * @constructor takes 2 doubles.
  */
 @Embeddable
-data class Location(var latitude: Double = 0.0, var longitude: Double = 0.0) : Serializable {
+data class Location(val latitude: Double = 0.0, val longitude: Double = 0.0) : Serializable {
     /**
      * Overridden method, which used in [PlaceService.nearby].
      * @return [latitude] and [longitude]

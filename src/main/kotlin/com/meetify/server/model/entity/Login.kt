@@ -15,8 +15,8 @@ import javax.persistence.Transient
  * @constructor defined login's properties.
  */
 @Entity
-class Login(@Id @Column(name = "id") var device: String = "",
+class Login(@Id @Column(name = "id") val device: String = "",
             @Column(name = "vk_id") override var id: Long = -1,
-            @Transient var token: String = "") : BaseEntity(id), Serializable {
+            @Transient val token: String = "") : BaseEntity(id), Serializable {
     override fun isAvailableFor(id: Long) = this.id == id
 }

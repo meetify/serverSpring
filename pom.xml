@@ -104,11 +104,6 @@
             <version>3.4.1</version>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-            <version>1.1-M04</version>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>2.8.5</version>
@@ -117,6 +112,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>2.8.5-SPECIAL-KOTLIN-1.1-M04</version>
         </dependency>
     </dependencies>
 
@@ -181,6 +181,10 @@
         <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
+        </repository>
+        <repository>
+            <id>jackson</id>
+            <url>http://dl.bintray.com/jaysonminard/kohesive</url>
         </repository>
         <repository>
             <snapshots>

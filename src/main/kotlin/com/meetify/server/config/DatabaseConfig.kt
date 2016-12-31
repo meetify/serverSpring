@@ -1,7 +1,7 @@
 package com.meetify.server.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.meetify.server.util.jackson.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,15 +18,14 @@ import javax.sql.DataSource
 
 
 /**
+ * @suppress
  * Class that used by Spring to configure Hibernate and database using application.properties.
  * @since  0.1.0
  * @property  env           property that allows to load some config lines.
  * @property  dataSource       property that allows to connect to database.
  * @property  entityManagerFactory  factory that used to create entityManager instances.
  */
-@Configuration
-@EnableTransactionManagement
-@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
+@Configuration @EnableTransactionManagement @Suppress("SpringKotlinAutowiring")
 open class DatabaseConfig {
 
     @Autowired
@@ -35,7 +34,7 @@ open class DatabaseConfig {
     @Autowired
     private val dataSource: DataSource? = null
 
-    @Suppress("SpringKotlinAutowiring") @Autowired
+    @Autowired
     private val entityManagerFactory: LocalContainerEntityManagerFactoryBean? = null
 
     /**
@@ -43,7 +42,8 @@ open class DatabaseConfig {
      * @return dataSource
      */
     @Bean
-    open fun dataSource(): DataSource = DriverManagerDataSource().apply {
+    open fun dataSource(): DataSource
+            = DriverManagerDataSource().apply {
         setDriverClassName(env!!.getProperty("db.driver"))
         url = env.getProperty("db.url")
         username = env.getProperty("db.username")
@@ -55,17 +55,16 @@ open class DatabaseConfig {
      * @return LocalContainerEntityManagerFactoryBean
      */
     @Bean
-    open fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
-        return LocalContainerEntityManagerFactoryBean().apply {
-            this.dataSource = this@DatabaseConfig.dataSource!!
-            setPackagesToScan(env!!.getProperty("entitymanager.packagesToScan"))
-            jpaVendorAdapter = HibernateJpaVendorAdapter()
-            setJpaProperties(Properties().apply {
-                put("hibernate.dialect", env.getProperty("hibernate.dialect"))
-                put("hibernate.show_sql", env.getProperty("hibernate.show_sql"))
-                put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"))
-            })
-        }
+    open fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean
+            = LocalContainerEntityManagerFactoryBean().apply {
+        this.dataSource = this@DatabaseConfig.dataSource!!
+        setPackagesToScan(env!!.getProperty("entitymanager.packagesToScan"))
+        jpaVendorAdapter = HibernateJpaVendorAdapter()
+        setJpaProperties(Properties().apply {
+            put("hibernate.dialect", env.getProperty("hibernate.dialect"))
+            put("hibernate.show_sql", env.getProperty("hibernate.show_sql"))
+            put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"))
+        })
     }
 
     /**
@@ -73,10 +72,9 @@ open class DatabaseConfig {
      * @return JpaTransactionManager
      */
     @Bean
-    open fun transactionManager(): JpaTransactionManager {
-        return JpaTransactionManager().apply {
-            entityManagerFactory = this@DatabaseConfig.entityManagerFactory!!.`object`
-        }
+    open fun transactionManager(): JpaTransactionManager
+            = JpaTransactionManager().apply {
+        entityManagerFactory = this@DatabaseConfig.entityManagerFactory!!.`object`
     }
 
     /**
@@ -87,16 +85,18 @@ open class DatabaseConfig {
      * @return PersistenceExceptionTranslationPostProcessor
      */
     @Bean
-    open fun exceptionTranslation(): PersistenceExceptionTranslationPostProcessor {
-        return PersistenceExceptionTranslationPostProcessor()
+    open fun exceptionTranslation(): PersistenceExceptionTranslationPostProcessor
+            = PersistenceExceptionTranslationPostProcessor()
+
+    /**
+     * Declare jacksonObjectMapper that works with Kotlin's classes.
+     * @return Jackson2ObjectMapperBuilder
+     */
+    @Bean
+    open fun objectMapperBuilder(): Jackson2ObjectMapperBuilder
+            = Jackson2ObjectMapperBuilder().apply {
+        serializationInclusion(JsonInclude.Include.NON_NULL)
+        configure(jacksonObjectMapper())
     }
 
-    @Bean
-    open fun objectMapperBuilder(): Jackson2ObjectMapperBuilder {
-        println("Bean objectMapperBuilder #||# going to give own builder")
-        return Jackson2ObjectMapperBuilder().apply {
-            serializationInclusion(JsonInclude.Include.NON_NULL)
-            configure(jacksonObjectMapper())
-        }
-    }
 }

@@ -20,17 +20,20 @@ abstract class AbstractController<T : BaseEntity>(
         open val loginService: LoginService) : BaseController<T> {
 
     @ResponseBody @GetMapping
-    override fun get(@RequestParam("ids") ids: HashSet<Long>, @RequestParam("device") device: String)
-            = login(device).let { service.get(ids).filter { item -> item.isAvailableFor(it.id) } }
+    override fun get(@RequestParam("ids") ids: HashSet<Long>, @RequestParam("device") device: String): List<T>
+            = login(device).let { login -> service.get(ids).filter { item -> item.isAvailableFor(login.id) } }
 
     @ResponseBody @PostMapping
-    override fun post(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.edit(item) }
+    override fun post(@RequestBody item: T, @RequestParam("device") device: String): T
+            = login(device).let { service.edit(item) }
 
     @ResponseBody @PutMapping
-    override fun put(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.add(item) }
+    override fun put(@RequestBody item: T, @RequestParam("device") device: String): T
+            = login(device).let { service.add(item) }
 
     @ResponseBody @DeleteMapping
-    override fun delete(@RequestBody item: T, @RequestParam("device") device: String) = login(device).let { service.delete(item) }
+    override fun delete(@RequestBody item: T, @RequestParam("device") device: String): Unit
+            = login(device).let { service.delete(item) }
 
     /**
      * Method, that allows to get login of user by it's device.
@@ -38,5 +41,6 @@ abstract class AbstractController<T : BaseEntity>(
      * @param  device UUID that allows to find information about user. More about this in [Login].
      * @return login found by [device]
      */
-    internal fun login(device: String) = loginService.get(device) ?: throw SecurityException("device exception")
+    internal fun login(device: String): Login
+            = loginService.get(device) ?: throw SecurityException("unknown device")
 }

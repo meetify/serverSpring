@@ -7,21 +7,19 @@ import java.io.Serializable
 import java.util.*
 
 /**
- * Created by dmitry on 12/12/16.
+ * @suppress
  */
-abstract class AbstractService<T : BaseEntity, in V : Serializable>(private val repo: BaseRepository<T, V>)
+abstract class AbstractService<T : BaseEntity, V : Serializable>(open val repo: BaseRepository<T, V>)
     : BaseService<T, V> {
-    override fun add(items: Collection<T>) = items.forEach { add(it) }
+    override fun add(items: Collection<T>): Unit = items.forEach { add(it) }
 
-    override fun get(ids: Collection<V>): HashSet<T> = HashSet<T>().apply {
-        ids.forEach { get(it)?.let { add(it) } }
-    }
+    override fun get(ids: Collection<V>): HashSet<T> = ids.map { get(it) }.filterNotNull().toHashSet()
 
-    override fun edit(items: Collection<T>) = items.forEach { edit(it) }
+    override fun edit(items: Collection<T>): Unit = items.forEach { edit(it) }
 
     override fun edit(item: T): T = repo.save(item)
 
-    override fun delete(item: T) = repo.delete(item)
+    override fun delete(item: T): Unit = repo.delete(item)
 
-    override fun delete(id: V) = repo.delete(id)
+    override fun delete(id: V): Unit = repo.delete(id)
 }

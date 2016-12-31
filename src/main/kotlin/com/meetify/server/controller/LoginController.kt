@@ -4,6 +4,7 @@ import com.meetify.server.model.UserExtended
 import com.meetify.server.model.entity.Login
 import com.meetify.server.model.entity.User
 import com.meetify.server.service.LoginService
+import com.meetify.server.util.JsonUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.*
@@ -27,10 +28,14 @@ class LoginController @Autowired constructor(private val loginService: LoginServ
 
     /**
      * Login, register, getting additional information about user in this method.
-     * This method refers to [LoginService.login].
+     * Refers to [LoginService.login].
      * @property json [LoginUser] with given information.
      * @return information about user's friends, allowed and created places.
      */
     @ResponseBody @PostMapping
-    fun login(@RequestBody json: LoginUser): UserExtended = loginService.login(json.login, json.user)
+    fun login(@RequestBody json: String): UserExtended {
+        println("LoginController.json: >$json<")
+        val loginUser = JsonUtils.readJson(json, LoginUser::class.java)
+        return loginService.login(loginUser.login, loginUser.user)
+    }
 }

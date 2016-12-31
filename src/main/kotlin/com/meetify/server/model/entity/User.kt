@@ -11,7 +11,7 @@ import javax.persistence.*
  * @since 0.1.0
  * @property id     Id
  * @property location where is geographically place located.
- * @property allowed collection of places, where user has access.
+ * @property allowed collection of places, where user was invited.
  * @property created collection of places, which are created by this user.
  * @property friends collection of users, who are user's friends.
  * @property name user's VK name
@@ -24,14 +24,13 @@ import javax.persistence.*
 @Entity
 @Table(name = "users")
 class User(@Id override var id: Long = -1,
-           @Embedded var location: Location = Location(),
-           @ElementCollection var friends: Set<Long> = HashSet(),
-           @ElementCollection var created: Set<Long> = HashSet(),
-           @ElementCollection var allowed: Set<Long> = HashSet(),
-           var name: String = "",
-           var photo: String = "",
+           val name: String = "",
+           val photo: String = "",
+           val vkAlbum: Long = 0,
            var time: Long = 0,
-           var vkAlbum: Long = 0
-) : BaseEntity(id), Serializable {
-    override fun isAvailableFor(id: Long): Boolean = id == this.id
+           @ElementCollection val friends: Set<Long> = HashSet(),
+           @ElementCollection var created: Set<Long> = HashSet(),
+           @ElementCollection var allowed: MutableMap<Long, Boolean> = HashMap<Long, Boolean>(),
+           @Embedded var location: Location = Location()) : BaseEntity(id), Serializable {
+    override fun isAvailableFor(id: Long): Boolean = id == this.id || friends.contains(id)
 }

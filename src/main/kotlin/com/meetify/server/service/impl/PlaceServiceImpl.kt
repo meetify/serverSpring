@@ -7,68 +7,66 @@ import com.meetify.server.model.entity.User
 import com.meetify.server.repository.PlaceRepository
 import com.meetify.server.service.PlaceService
 import com.meetify.server.service.UserService
-import com.meetify.server.util.JsonUtils
+import com.meetify.server.util.JsonUtils.readJson
 import com.meetify.server.util.WebUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Service
 import java.util.*
 
 /**
- * Created by dmitry on 12/12/16.
+ * @suppress
  */
-@Service
+@Service @Scope("singleton")
 class PlaceServiceImpl
 @Autowired constructor(repo: PlaceRepository,
                        private val userService: UserService)
     : AbstractLongService<Place>(repo), PlaceService {
+
     override fun add(item: Place): Place = place(null, super.add(item))
 
     override fun edit(item: Place): Place = place(get(item.id), super.edit(item))
 
     override fun nearby(location: Location, radius: String, types: String, name: String): GooglePlace {
-        val url = StringBuilder(url).apply {
-            mapOf(Pair("location", location), Pair("radius", radius), Pair("types", types), Pair("name", name), Pair("key", key)
-            ).forEach {
-                append("${it.key}=${it.value}&")
-            }
-        }.toString()
-        return JsonUtils.json(WebUtils.request(url).body().string(), GooglePlace::class.java).apply {
-            results = results.filter { it.photos.isNotEmpty() && it.types.contains("point_of_interest") }.apply {
-                forEach { it.photos.forEach { it.photoReference = photo + it.photoReference } }
-            }
+        val url = "${url}location=$location&radius=$radius&types=$types&name=$name"
+        val response = WebUtils.request(url).body().string()
+        return readJson(response, GooglePlace::class.java).apply {
+            results = results
+                    .filter { it.photos.isNotEmpty() && it.types.contains("point_of_interest") }
+                    .onEach { it.photos.forEach { it.photoReference.insert(0, photo) } }
         }
     }
 
+    private fun place(old: Place?, new: Place): Place = new.apply {
+        val users = HashSet<User>()
+        old?.let {
+            (userService.get(old.owner))?.let {
+                //tag 1: we remove in that users, who isn't present in new allowed
+                old.allowed.map { userService.get(it.key)!! }
+                        .filter { !new.allowed.containsKey(it.id) }
+                        .apply { users += this }
+                        .forEach { it.allowed.remove(old.id) }
 
-    private fun place(old: Place?, new: Place): Place {
-        HashSet<User>().apply {
-            old?.let {
-                (userService.get(old.owner))?.let {
-                    old.allowed.map { userService.get(it)!! }.forEach {
-                        it.allowed -= old.id
-                        add(it)
-                    }
-                    it.created -= old.id
-                    this += it
-                }
+                it.created -= old.id
+                users.add(it)
             }
-            (userService.get(new.owner) ?: throw IllegalArgumentException("owner not found")).let {
-                new.allowed.map { userService.get(it)!! }.forEach {
-                    it.allowed += new.id
-                    this += it
-                }
-                it.created += new.id
-                this += it
-            }
-            userService.edit(this)
         }
-
-        return new
+        (userService.get(new.owner) ?: throw IllegalArgumentException("owner not found")).let {
+            //if user was found in tag1, he has it.allowed[new.id], otherwise he's new at this place => false
+            new.allowed.map { userService.get(it.key)!! }
+                    .apply { users += this }
+                    .forEach { it.allowed.put(new.id, it.allowed[new.id] ?: false) }
+            it.created += new.id
+            users.add(it)
+        }
+        userService.edit(users)
     }
 
     private companion object {
         private val key = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
-        private val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+        private val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$key&"
         private val photo = "https://maps.googleapis.com/maps/api/place/photo?key=$key&maxwidth=600&photoreference="
     }
 }
+
+
