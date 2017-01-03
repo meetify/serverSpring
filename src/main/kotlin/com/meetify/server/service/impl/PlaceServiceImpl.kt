@@ -42,8 +42,8 @@ class PlaceServiceImpl
         old?.let {
             (userService.get(old.owner))?.let {
                 //tag 1: we remove in that users, who isn't present in new allowed
-                old.allowed.map { userService.get(it.key)!! }
-                        .filter { !new.allowed.containsKey(it.id) }
+                old.allowed.keys.filter { !new.allowed.containsKey(it) }
+                        .let { userService.get(it) }
                         .apply { users += this }
                         .forEach { it.allowed.remove(old.id) }
 
@@ -53,7 +53,7 @@ class PlaceServiceImpl
         }
         (userService.get(new.owner) ?: throw IllegalArgumentException("owner not found")).let {
             //if user was found in tag1, he has it.allowed[new.id], otherwise he's new at this place => false
-            new.allowed.map { userService.get(it.key)!! }
+            userService.get(new.allowed.keys)
                     .apply { users += this }
                     .forEach { it.allowed.put(new.id, it.allowed[new.id] ?: false) }
             it.created += new.id

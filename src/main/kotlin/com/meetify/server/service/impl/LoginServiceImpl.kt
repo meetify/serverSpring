@@ -41,9 +41,7 @@ class LoginServiceImpl @Autowired constructor(
         edit(login)
         userService.edit(user)
 
-        return UserExtended(userService.friends(login.id),
-                placeService.get(user.created),
-                placeService.get(user.allowed.keys))
+        return userService.update(user)
     }
 
     override fun add(item: Login): Login = repo.save(item)

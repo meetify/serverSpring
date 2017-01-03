@@ -7,7 +7,10 @@ import com.meetify.server.service.LoginService
 import com.meetify.server.service.PlaceService
 import com.meetify.server.util.JsonUtils.readJson
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * This class represents controller over places. It holds mapping '/place'.
@@ -30,9 +33,9 @@ class PlaceController @Autowired constructor(
      * @param name the parameter that allow searching by name.
      * @return google place
      */
-    @ResponseBody @GetMapping @RequestMapping("/nearby")
+    @GetMapping @RequestMapping("/nearby")
     fun nearby(@RequestParam("location") location: String,
-               @RequestParam("name", defaultValue = "100") radius: String,
+               @RequestParam("radius", defaultValue = "100") radius: String,
                @RequestParam("types", defaultValue = "") types: String,
                @RequestParam("name", defaultValue = "") name: String): GooglePlace
             = service.nearby(readJson(location, Location::class.java), radius, types, name)

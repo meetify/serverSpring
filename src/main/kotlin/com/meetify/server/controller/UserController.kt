@@ -1,6 +1,7 @@
 package com.meetify.server.controller
 
 import com.meetify.server.model.Location
+import com.meetify.server.model.UserExtended
 import com.meetify.server.model.entity.Login
 import com.meetify.server.model.entity.Place
 import com.meetify.server.model.entity.User
@@ -27,7 +28,7 @@ class UserController @Autowired constructor(
      * @param  device UUID that allows to find info about user. More about this in [Login].
      * @return  list with friends info.
      */
-    @RequestMapping("/friends") @GetMapping
+    @GetMapping @RequestMapping("/friends")
     fun friends(@RequestParam(name = "device") device: String): Set<User>
             = service.friends(login(device).id)
 
@@ -38,7 +39,7 @@ class UserController @Autowired constructor(
      * @param device UUID that allows to find info about user. More about this in [Login].
      * @return user with updated location and online time information.
      */
-    @RequestMapping("/update") @PostMapping
+    @PostMapping @RequestMapping("/update")
     fun update(@RequestBody location: Location, @RequestParam("device") device: String): User =
             service.update(service.get(login(device).id)!!, location)
 
@@ -51,4 +52,14 @@ class UserController @Autowired constructor(
     @GetMapping @RequestMapping("/unvisited")
     fun unvisited(@RequestParam device: String): Set<Place> =
             service.unvisited(service.get(login(device).id)!!)
+
+    /**
+     * Returns user's friends, created and allowed places.
+     * Refers to [UserService.update].
+     * @param device UUID that allows to find info about user. More about this in [Login].
+     * @return information about user's friends, allowed and created places.
+     */
+    @GetMapping @RequestMapping("/extended")
+    fun update(@RequestParam device: String): UserExtended =
+            service.update(service.get(login(device).id)!!)
 }

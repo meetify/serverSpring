@@ -1,6 +1,7 @@
 package com.meetify.server.service
 
 import com.meetify.server.model.Location
+import com.meetify.server.model.UserExtended
 import com.meetify.server.model.entity.Place
 import com.meetify.server.model.entity.User
 import java.util.*
@@ -30,4 +31,10 @@ interface UserService : BaseService<User, Long> {
      * @param user user
      */
     fun unvisited(user: User): HashSet<Place>
+
+    /**
+     * Returns user friends and places.
+     * @param user user
+     */
+    fun update(user: User): UserExtended
 }

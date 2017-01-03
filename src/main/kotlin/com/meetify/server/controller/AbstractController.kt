@@ -19,19 +19,19 @@ abstract class AbstractController<T : BaseEntity>(
         open val service: BaseService<T, Long>,
         open val loginService: LoginService) : BaseController<T> {
 
-    @ResponseBody @GetMapping
+    @GetMapping
     override fun get(@RequestParam("ids") ids: HashSet<Long>, @RequestParam("device") device: String): List<T>
-            = login(device).let { login -> service.get(ids).filter { item -> item.isAvailableFor(login.id) } }
+            = login(device).let { login -> service.get(ids).filter { it.isAvailableFor(login.id) } }
 
-    @ResponseBody @PostMapping
+    @PostMapping
     override fun post(@RequestBody item: T, @RequestParam("device") device: String): T
             = login(device).let { service.edit(item) }
 
-    @ResponseBody @PutMapping
+    @PutMapping
     override fun put(@RequestBody item: T, @RequestParam("device") device: String): T
             = login(device).let { service.add(item) }
 
-    @ResponseBody @DeleteMapping
+    @DeleteMapping
     override fun delete(@RequestBody item: T, @RequestParam("device") device: String): Unit
             = login(device).let { service.delete(item) }
 
