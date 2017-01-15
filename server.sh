@@ -1,7 +1,5 @@
 #!/bin/sh
-#rm -rf serverSpring
-#if [ $1 == "-t"]
-echo "$OSTYPE"
+#echo "$OSTYPE"
 if [ "$1" != "" ]; then
   arg=$1
 else
@@ -31,7 +29,7 @@ if [ ! -d "serverSpring" ]; then #if there is no serverSpring dir, we should clo
 fi
 cd ./serverSpring
 git checkout testing
-if [ $created -eq 1 ]; then
+if [ ${created} -eq 1 ]; then
 	cd ./src/main
 	if [ "$OSTYPE" == "msys" ]; then
 		export MSYS=winsymlinks:nativestrict
@@ -41,7 +39,7 @@ if [ $created -eq 1 ]; then
 fi
 for (( index=1; index <= $len; index++ ))  do
   char=${arg:index:1}
-  case $char in
+  case ${char} in
     "d")
       printf "dropping all tables in database meetify with user postgres\n"
 psql meetify postgres << EOF
@@ -67,7 +65,7 @@ done
 git fetch
 git pull
 if [ "$OSTYPE" == "msys" ]; then
-	/c/Maven/bin/mvn spring-boot:run
+ /c/Maven/bin/mvn spring-boot:run
 else
-	mvn spring-boot:run
+  mvn spring-boot:run
 fi

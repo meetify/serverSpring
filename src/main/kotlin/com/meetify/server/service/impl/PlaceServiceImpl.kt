@@ -1,6 +1,7 @@
 package com.meetify.server.service.impl
 
 import com.meetify.server.model.GooglePlace
+import com.meetify.server.model.GooglePlaceDetailed
 import com.meetify.server.model.Location
 import com.meetify.server.model.entity.Place
 import com.meetify.server.model.entity.User
@@ -28,9 +29,32 @@ class PlaceServiceImpl
     override fun edit(item: Place): Place = place(get(item.id), super.edit(item))
 
     override fun nearby(location: Location, radius: String, types: String, name: String): GooglePlace {
-        val url = "${url}location=$location&radius=$radius&types=$types&name=$name"
-        val response = WebUtils.request(url).body().string()
-        return readJson(response, GooglePlace::class.java).apply {
+        val url = "${url(GooglePlaceRequest.NEARBY)}location=$location&radius=$radius&types=$types&name=$name"
+        return googlePlaceRequest(url)
+    }
+
+    override fun text(query: String, location: Location, radius: String, types: String): GooglePlace {
+        val url = "${url(GooglePlaceRequest.TEXT)}location=$location&radius=$radius&types=$types&query=$query"
+        return googlePlaceRequest(url)
+    }
+
+    override fun details(placeId: String): GooglePlaceDetailed {
+        val url = "${url(GooglePlaceRequest.DETAILS)}placeid=$placeId"
+        return googlePlaceDetailedRequest(url)
+    }
+
+    private fun googlePlaceDetailedRequest(url: String): GooglePlaceDetailed {
+        val json = WebUtils.request(url).body().string()
+        return readJson(json, GooglePlaceDetailed::class.java).apply {
+            println(json)
+            result.photos.onEach { it.photoReference.insert(0, photo) }
+        }
+    }
+
+    private fun googlePlaceRequest(url: String): GooglePlace {
+        val json = WebUtils.request(url).body().string()
+        return readJson(json, GooglePlace::class.java).apply {
+            println(json)
             results = results
                     .filter { it.photos.isNotEmpty() && it.types.contains("point_of_interest") }
                     .onEach { it.photos.forEach { it.photoReference.insert(0, photo) } }
@@ -63,9 +87,22 @@ class PlaceServiceImpl
     }
 
     private companion object {
-        private val key = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
-        private val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$key&"
-        private val photo = "https://maps.googleapis.com/maps/api/place/photo?key=$key&maxwidth=600&photoreference="
+        val key = "AIzaSyBgnGyxIek6PtMuVARZmVfaEtlH0Wiazms"
+        val photo = "https://maps.googleapis.com/maps/api/place/photo?key=$key&maxwidth=600&photoreference="
+
+        fun url(request: GooglePlaceRequest) = "https://maps.googleapis.com/maps/api/place/$request/json?key=$key&"
+
+        enum class GooglePlaceRequest {
+            NEARBY {
+                override fun toString() = "nearbysearch"
+            },
+            TEXT {
+                override fun toString() = "textsearch"
+            },
+            DETAILS {
+                override fun toString() = "details"
+            };
+        }
     }
 }
 
