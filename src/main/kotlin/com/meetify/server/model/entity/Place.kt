@@ -24,6 +24,8 @@ class Place(val name: String = "",
             val photo: String = "",
             @Embedded val location: Location = Location(),
             @ElementCollection val allowed: Map<Long, Boolean> = HashMap<Long, Boolean>(),
+            var date: Long = 0,
+            var vkEvent: Long = 0,
             @Id override var id: Long = -1) : BaseEntity(id), Serializable {
     override fun isAvailableFor(id: Long): Boolean = allowed.contains(id) || owner == id
 }
